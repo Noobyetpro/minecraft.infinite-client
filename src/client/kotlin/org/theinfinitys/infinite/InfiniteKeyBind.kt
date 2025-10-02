@@ -63,14 +63,18 @@ object InfiniteKeyBind {
             for (toggleKeyBind in toggleKeyBindings) {
                 while (toggleKeyBind.keyBinding.wasPressed()) {
                     // 修正 2: enabled.valueをトグル（否定を代入）します
-                    toggleKeyBind.feature.enabled.value = !toggleKeyBind.feature.enabled.value
+                    if (toggleKeyBind.feature.isEnabled()) {
+                        toggleKeyBind.feature.disable()
+                    } else {
+                        toggleKeyBind.feature.enable()
+                    }
                 }
             }
 
             // Tick all enabled features
             for (category in featureCategories) {
                 for (feature in category.features) {
-                    if (feature.instance is ConfigurableFeature && feature.instance.enabled.value) {
+                    if (feature.instance is ConfigurableFeature && feature.instance.isEnabled()) {
                         feature.instance.tick()
                     }
                 }

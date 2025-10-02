@@ -234,10 +234,14 @@ object InfiniteCommand {
         }
 
         // 現在の状態を反転させる
-        val enable = !feature.enabled.value
+        val enable = !feature.isEnabled()
         val action = if (enable) "有効化" else "無効化"
 
-        feature.enabled.value = enable
+        if (enable) {
+            feature.enable()
+        } else {
+            feature.disable()
+        }
         info("$featureName を $action しました。")
         return 1
     }
@@ -318,11 +322,15 @@ object InfiniteCommand {
             error("フィーチャーが見つかりません: $categoryName / $featureName")
             return 0
         }
-        if (feature.enabled.value == enable) {
+        if (feature.isEnabled() == enable) {
             warn("$featureName は既に${action}されています。")
             return 0
         }
-        feature.enabled.value = enable
+        if (enable) {
+            feature.enable()
+        } else {
+            feature.disable()
+        }
         info("$featureName を $action しました。")
         return 1
     }
@@ -423,7 +431,7 @@ object InfiniteCommand {
             error("フィーチャーが見つかりません: $categoryName / $featureName")
             return 0
         }
-        val status = if (feature.enabled.value) "${Formatting.GREEN}有効" else "${Formatting.RED}無効"
+        val status = if (feature.isEnabled()) "${Formatting.GREEN}有効" else "${Formatting.RED}無効"
         info("フィーチャー $featureName の状態: $status")
         val settingCount = feature.settings.size
         if (settingCount > 0) {

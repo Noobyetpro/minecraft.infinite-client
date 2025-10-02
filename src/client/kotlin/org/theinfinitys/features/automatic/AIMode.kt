@@ -17,14 +17,14 @@ class AIMode : ConfigurableFeature(initialEnabled = false) {
     override fun disabled() {
         // AIモードが無効になったら、WoodCutterとVeinMinerを無効化する
         InfiniteClient.getFeature(WoodCutter::class.java)?.let { woodCutter ->
-            if (woodCutter.enabled.value) {
-                woodCutter.enabled.value = false
+            if (woodCutter.isEnabled()) {
+                woodCutter.disable()
                 InfiniteClient.warn("AIモードが無効になったため、WoodCutterを無効化しました。")
             }
         }
         InfiniteClient.getFeature(VeinMiner::class.java)?.let { veinMiner ->
-            if (veinMiner.enabled.value) {
-                veinMiner.enabled.value = false
+            if (veinMiner.isEnabled()) {
+                veinMiner.disable()
                 InfiniteClient.warn("AIモードが無効になったため、VeinMinerを無効化しました。")
             }
         }

@@ -36,10 +36,14 @@ class InfiniteFeatureToggle(
                 y,
                 buttonWidth,
                 height,
-                configurableFeature.enabled.value,
+                configurableFeature.isEnabled(),
                 true,
             ) { newState ->
-                configurableFeature.enabled.value = newState
+                if (newState) {
+                    configurableFeature.enable()
+                } else {
+                    configurableFeature.disable()
+                }
             }
 
         settingsButton =

@@ -9,8 +9,8 @@ import org.theinfinitys.settings.Property
 abstract class ConfigurableFeature(
     private val initialEnabled: Boolean = false,
 ) {
-    var enabled: Property<Boolean> = Property(initialEnabled)
-    val disabled: Property<Boolean> = Property(!initialEnabled)
+    internal var enabled: Property<Boolean> = Property(initialEnabled)
+    private val disabled: Property<Boolean> = Property(!initialEnabled)
     val toggleKeyBind: Property<Int> = Property(GLFW.GLFW_DONT_CARE)
 
     init {
@@ -55,6 +55,14 @@ abstract class ConfigurableFeature(
 
     fun disable() {
         disabled.value = true
+    }
+
+    fun isEnabled(): Boolean {
+        return enabled.value
+    }
+
+    fun isDisabled(): Boolean {
+        return disabled.value
     }
 
     /**

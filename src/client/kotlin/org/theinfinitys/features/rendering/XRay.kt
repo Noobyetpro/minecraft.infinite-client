@@ -109,7 +109,7 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
         blockState: BlockState,
         blockPos: BlockPos?,
     ): Boolean? {
-        if (!enabled.value) return null
+        if (!isEnabled()) return null
 
         val block = blockState.block
         val pos = blockPos ?: return null

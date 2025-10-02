@@ -26,7 +26,7 @@ class Freeze : ConfigurableFeature(initialEnabled = false) {
         if (durationSetting.value > 0.0f) {
             val elapsedSeconds = (System.currentTimeMillis() - freezeStartTime) / 1000.0f
             if (elapsedSeconds >= durationSetting.value) {
-                enabled.value = false // Disable the feature after duration
+                disable() // Disable the feature after duration
             }
         }
     }

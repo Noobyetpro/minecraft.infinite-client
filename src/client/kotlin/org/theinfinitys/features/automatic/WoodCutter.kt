@@ -23,7 +23,7 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
         // WoodCutterが有効になったら、VeinMinerを無効化する
         if (InfiniteClient.isFeatureEnabled(VeinMiner::class.java)) {
             val veinMiner = InfiniteClient.getFeature(VeinMiner::class.java)
-            veinMiner?.enabled?.value = false
+            veinMiner?.disable()
             InfiniteClient.warn("VeinMinerを無効化しました。WoodCutterと競合します。")
         }
     }

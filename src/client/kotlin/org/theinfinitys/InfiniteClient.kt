@@ -246,7 +246,7 @@ object InfiniteClient : ClientModInitializer {
     fun <T : ConfigurableFeature> isFeatureEnabled(featureClass: Class<T>): Boolean {
         val feature = getFeature(featureClass)
 
-        return feature != null && feature.enabled.value
+        return feature != null && feature.isEnabled()
     }
 
     /**
@@ -261,7 +261,7 @@ object InfiniteClient : ClientModInitializer {
     ): Boolean {
         val feature = getFeature(featureClass)
 
-        if (feature == null || !feature.enabled.value) {
+        if (feature == null || !feature.isEnabled()) {
             return false
         }
 
@@ -283,7 +283,7 @@ object InfiniteClient : ClientModInitializer {
     ): Float {
         val feature = getFeature(featureClass)
 
-        if (feature == null || !feature.enabled.value) {
+        if (feature == null || !feature.isEnabled()) {
             return defaultValue
         }
 
@@ -309,7 +309,7 @@ object InfiniteClient : ClientModInitializer {
     ): Int {
         val feature = getFeature(featureClass)
 
-        if (feature == null || !feature.enabled.value) {
+        if (feature == null || !feature.isEnabled()) {
             return defaultValue
         }
 

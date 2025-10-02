@@ -53,7 +53,7 @@ class SafeWalk : ConfigurableFeature(initialEnabled = false) {
      */
     fun onPreMotion() {
         // ConfigurableFeatureのenabledプロパティを使用
-        if (!enabled.value) return
+        if (!isEnabled()) return
 
         val player = client.player ?: return
 

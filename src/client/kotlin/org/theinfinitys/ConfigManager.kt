@@ -87,7 +87,7 @@ object ConfigManager {
                                             }
                                     )
                                 }
-                            FeatureConfig(feature.name, configurableFeature.enabled.value, settingMap)
+                            FeatureConfig(feature.name, configurableFeature.isEnabled(), settingMap)
                         } else {
                             null
                         }
@@ -119,7 +119,11 @@ object ConfigManager {
                 featureCategories.flatMap { it.features }.find { it.name == featureConfig.name }?.let { feature ->
                     val configurableFeature = feature.instance as? ConfigurableFeature
                     if (configurableFeature != null) {
-                        configurableFeature.enabled.value = featureConfig.enabled
+                        if (featureConfig.enabled) {
+                            configurableFeature.enable()
+                        } else {
+                            configurableFeature.disable()
+                        }
                         featureConfig.settings.forEach { (settingName, jsonElement) ->
                             configurableFeature.settings.find { it.name == settingName }?.let { setting ->
                                 when (setting) {
