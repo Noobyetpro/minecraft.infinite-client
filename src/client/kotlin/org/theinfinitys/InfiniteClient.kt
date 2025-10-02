@@ -29,7 +29,7 @@ object InfiniteClient : ClientModInitializer {
 
 // 「Infinite Client」の部分を虹色にする
 
-			log("version $modVersion")
+            log("version $modVersion")
             log("Mod initialized successfully.")
         }
 
