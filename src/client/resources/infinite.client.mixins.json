@@ -7,7 +7,10 @@
     "client.rendering.CameraMixin",
     "client.rendering.GameRendererMixin",
     "client.ClientPlayerEntityMixin",
-    "client.rendering.XRayBlockStateMixin"
+    "client.rendering.AbstractTerrainRenderContextMixin",
+    "client.rendering.BlockEntityRenderDispatcherMixin",
+    "client.rendering.BlockModelRendererMixin",
+    "client.rendering.BlockRenderInfoMixin"
   ],
   "injectors": {
     "defaultRequire": 1
