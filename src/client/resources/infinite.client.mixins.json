@@ -6,7 +6,8 @@
     "client.rendering.InGameHudMixin",
     "client.rendering.CameraMixin",
     "client.rendering.GameRendererMixin",
-    "client.ClientPlayerEntityMixin"
+    "client.ClientPlayerEntityMixin",
+    "client.rendering.XRayBlockStateMixin"
   ],
   "injectors": {
     "defaultRequire": 1
