@@ -103,6 +103,13 @@ object InfiniteCommand {
                     ),
                 ),
         )
+        featureCategories.forEach { category ->
+            category.features.forEach { feature ->
+                (feature.instance as? ConfigurableFeature)?.let { configurableFeature ->
+                    configurableFeature.registerCommands(dispatcher)
+                }
+            }
+        }
     }
 
     /*

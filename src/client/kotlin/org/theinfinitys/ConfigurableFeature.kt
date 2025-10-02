@@ -1,5 +1,7 @@
 package org.theinfinitys
 
+import com.mojang.brigadier.CommandDispatcher
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import org.lwjgl.glfw.GLFW
 import org.theinfinitys.settings.InfiniteSetting
 import org.theinfinitys.settings.Property
@@ -32,6 +34,7 @@ abstract class ConfigurableFeature(
 
     fun reset() {
         enabled.value = initialEnabled
+        settings.forEach { it.reset() }
     }
 
     abstract val settings: List<InfiniteSetting<*>>
@@ -60,4 +63,6 @@ abstract class ConfigurableFeature(
      * @return 指定された名前の設定、または見つからない場合はnull
      */
     fun getSetting(name: String): InfiniteSetting<*>? = settings.find { it.name == name }
+
+    open fun registerCommands(dispatcher: CommandDispatcher<FabricClientCommandSource>) {}
 }
