@@ -45,25 +45,5 @@ public class XRaySodiumDefaultFluidRendererMixin {
         }
     }
 
-    /**
-     * Modifies opacity of fluids when using X-Ray with Sodium installed.
-     */
-    @ModifyExpressionValue(at = @At(value = "INVOKE",
-            target = "Lnet/caffeinemc/mods/sodium/api/util/ColorARGB;toABGR(I)I"),
-            method = "updateQuad",
-            require = 0,
-            remap = false)
-    private int onUpdateQuad(int original, @Local(argsOnly = true) BlockPos pos,
-                             @Local(argsOnly = true) FluidState state) {
-        XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
-        if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            return original;
-        }
 
-        if (!xray.isOpacityMode() || xray.isVisible(state.getBlockState().getBlock(), pos)) {
-            return original;
-        }
-
-        return original & xray.getOpacityColorMask();
-    }
 }

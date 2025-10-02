@@ -13,33 +13,5 @@ import org.theinfinitys.features.rendering.XRay;
 
 @Mixin(RenderLayers.class)
 public abstract class XRayRenderLayersMixin {
-    /**
-     * Puts all blocks on the translucent layer if Opacity X-Ray is enabled.
-     */
-    @Inject(at = @At("HEAD"), method = "getBlockLayer(Lnet/minecraft/block/BlockState;)Lnet/minecraft/client/render/BlockRenderLayer;", cancellable = true)
-    private static void onGetBlockLayer(BlockState state, CallbackInfoReturnable<BlockRenderLayer> cir) {
-        XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
-        if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            return;
-        }
 
-        if (xray.isOpacityMode()) {
-            cir.setReturnValue(BlockRenderLayer.TRANSLUCENT);
-        }
-    }
-
-    /**
-     * Puts all fluids on the translucent layer if Opacity X-Ray is enabled.
-     */
-    @Inject(at = @At("HEAD"), method = "getFluidLayer(Lnet/minecraft/fluid/FluidState;)Lnet/minecraft/client/render/BlockRenderLayer;", cancellable = true)
-    private static void onGetFluidLayer(FluidState state, CallbackInfoReturnable<BlockRenderLayer> cir) {
-        XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
-        if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            return;
-        }
-
-        if (xray.isOpacityMode()) {
-            cir.setReturnValue(BlockRenderLayer.TRANSLUCENT);
-        }
-    }
 }

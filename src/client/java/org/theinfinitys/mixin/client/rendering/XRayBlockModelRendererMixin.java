@@ -19,8 +19,6 @@ import org.theinfinitys.features.rendering.XRay;
 
 @Mixin(BlockModelRenderer.class)
 public abstract class XRayBlockModelRendererMixin implements ItemConvertible {
-    @Unique
-    private static final ThreadLocal<Float> currentOpacity = ThreadLocal.withInitial(() -> 1F);
 
     /**
      * Makes X-Ray work when neither Sodium nor Indigo are running. Also gets
@@ -47,29 +45,14 @@ public abstract class XRayBlockModelRendererMixin implements ItemConvertible {
             BlockPos pos) {
         XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
         if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            currentOpacity.set(1F);
             return original.call(state, otherState, side);
         }
 
         Boolean shouldDraw = xray.shouldDrawSide(state, pos);
         if (shouldDraw != null) {
-            currentOpacity.set(shouldDraw ? 1F : xray.getOpacityFloat());
             return shouldDraw;
         }
 
-        currentOpacity.set(1F);
         return original.call(state, otherState, side);
-    }
-
-    /**
-     * Applies X-Ray's opacity mask to the block color after all the normal
-     * coloring and shading is done, if neither Sodium nor Indigo are running.
-     */
-    @ModifyConstant(
-            method =
-                    "renderQuad(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/util/math/MatrixStack$Entry;Lnet/minecraft/client/render/model/BakedQuad;Lnet/minecraft/client/render/block/BlockModelRenderer$LightmapCache;I)V",
-            constant = @Constant(floatValue = 1F))
-    private float modifyOpacity(float original) {
-        return currentOpacity.get();
     }
 }

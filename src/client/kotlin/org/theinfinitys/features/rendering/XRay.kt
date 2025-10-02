@@ -15,80 +15,69 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
             "BlockList",
             "XRayで表示するブロックのリスト（ブロックIDをカンマ区切りで指定）。",
             mutableListOf(
-                "ancient_debris",
-                "anvil",
-                "beacon",
-                "bone_block",
-                "bookshelf",
-                "brewing_stand",
-                "chain_command_block",
-                "chest",
-                "clay",
-                "coal_block",
-                "coal_ore",
-                "command_block",
-                "copper_ore",
-                "crafting_table",
-                "deepslate_coal_ore",
-                "deepslate_copper_ore",
-                "deepslate_diamond_ore",
-                "deepslate_emerald_ore",
-                "deepslate_gold_ore",
-                "deepslate_iron_ore",
-                "deepslate_lapis_ore",
-                "deepslate_redstone_ore",
-                "diamond_block",
-                "diamond_ore",
-                "dispenser",
-                "dropper",
-                "emerald_block",
-                "emerald_ore",
-                "enchanting_table",
-                "end_portal",
-                "end_portal_frame",
-                "ender_chest",
-                "furnace",
-                "glowstone",
-                "gold_block",
-                "gold_ore",
-                "hopper",
-                "iron_block",
-                "iron_ore",
-                "ladder",
-                "lapis_block",
-                "lapis_ore",
-                "lava",
-                "lodestone",
-                "mossy_cobblestone",
-                "nether_gold_ore",
-                "nether_portal",
-                "nether_quartz_ore",
-                "raw_copper_block",
-                "raw_gold_block",
-                "raw_iron_block",
-                "redstone_block",
-                "redstone_ore",
-                "repeating_command_block",
-                "spawner",
-                "suspicous_sand",
-                "tnt",
-                "torch",
-                "trapped_chest",
-                "water"
+                "minecraft:ancient_debris",
+                "minecraft:anvil",
+                "minecraft:beacon",
+                "minecraft:bone_block",
+                "minecraft:bookshelf",
+                "minecraft:brewing_stand",
+                "minecraft:chain_command_block",
+                "minecraft:chest",
+                "minecraft:clay",
+                "minecraft:coal_block",
+                "minecraft:coal_ore",
+                "minecraft:command_block",
+                "minecraft:copper_ore",
+                "minecraft:crafting_table",
+                "minecraft:deepslate_coal_ore",
+                "minecraft:deepslate_copper_ore",
+                "minecraft:deepslate_diamond_ore",
+                "minecraft:deepslate_emerald_ore",
+                "minecraft:deepslate_gold_ore",
+                "minecraft:deepslate_iron_ore",
+                "minecraft:deepslate_lapis_ore",
+                "minecraft:deepslate_redstone_ore",
+                "minecraft:diamond_block",
+                "minecraft:diamond_ore",
+                "minecraft:dispenser",
+                "minecraft:dropper",
+                "minecraft:emerald_block",
+                "minecraft:emerald_ore",
+                "minecraft:enchanting_table",
+                "minecraft:end_portal",
+                "minecraft:end_portal_frame",
+                "minecraft:ender_chest",
+                "minecraft:furnace",
+                "minecraft:glowstone",
+                "minecraft:gold_block",
+                "minecraft:gold_ore",
+                "minecraft:hopper",
+                "minecraft:iron_block",
+                "minecraft:iron_ore",
+                "minecraft:ladder",
+                "minecraft:lapis_block",
+                "minecraft:lapis_ore",
+                "minecraft:lava",
+                "minecraft:lodestone",
+                "minecraft:mossy_cobblestone",
+                "minecraft:nether_gold_ore",
+                "minecraft:nether_portal",
+                "minecraft:nether_quartz_ore",
+                "minecraft:raw_copper_block",
+                "minecraft:raw_gold_block",
+                "minecraft:raw_iron_block",
+                "minecraft:redstone_block",
+                "minecraft:redstone_ore",
+                "minecraft:repeating_command_block",
+                "minecraft:spawner",
+                "minecraft:suspicous_sand",
+                "minecraft:tnt",
+                "minecraft:torch",
+                "minecraft:trapped_chest",
+                "minecraft:water"
             ),
         ),
-        InfiniteSetting.BooleanSetting(
-            "OnlyExposed",
-            "洞窟内で見える鉱石のみを表示します。これにより、アンチX-Rayプラグイン対策に役立ちます。",
-            false,
-        ),
-        InfiniteSetting.FloatSetting(
-            "Opacity",
-            "X-Rayが有効な場合の非鉱石ブロックの不透明度。",
-            0.0f,
-            0.0f,
-            0.99f,
-        ),
+
     )
 
     override fun enabled() {
@@ -113,34 +102,8 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
             return true
         }
 
-        val onlyExposed = (settings[1] as InfiniteSetting.BooleanSetting).value
-        if (onlyExposed) {
-            val client = MinecraftClient.getInstance()
-            val world = client.world ?: return false
 
-            for (direction in Direction.values()) {
-                val neighborPos = pos.offset(direction)
-                val neighborState = world.getBlockState(neighborPos)
-                if (neighborState.isAir) {
-                    return true
-                }
-            }
-        }
         return false
-    }
-
-    fun isOpacityMode(): Boolean {
-        return (settings[2] as InfiniteSetting.FloatSetting).value < 1.0f
-    }
-
-    fun getOpacityFloat(): Float {
-        return (settings[2] as InfiniteSetting.FloatSetting).value
-    }
-
-    fun getOpacityColorMask(): Int {
-        val opacity = getOpacityFloat()
-        val alpha = (opacity * 255).toInt() and 0xFF
-        return alpha shl 24 or 0x00FFFFFF // Keep RGB, set A
     }
 
     fun shouldDrawSide(blockState: BlockState, blockPos: BlockPos?): Boolean? {
@@ -149,10 +112,6 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
         val block = blockState.block
         val pos = blockPos ?: return null
 
-        if (isOpacityMode()) {
-            return isVisible(block, pos)
-        }
-
-        return null
+        return isVisible(block, pos)
     }
 }

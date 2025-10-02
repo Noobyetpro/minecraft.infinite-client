@@ -26,22 +26,5 @@ public class XRaySodiumBlockRendererMixin {
     @Shadow
     protected BlockPos pos;
 
-    /**
-     * Modifies opacity of blocks when using X-Ray with Sodium installed.
-     */
-    @ModifyExpressionValue(at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/render/frapi/mesh/MutableQuadViewImpl;color(I)I"),
-            method = "bufferQuad(Lnet/caffeinemc/mods/sodium/client/render/frapi/mesh/MutableQuadViewImpl;[FLnet/caffeinemc/mods/sodium/client/render/chunk/terrain/material/Material;)V",
-            require = 0)
-    private int onBufferQuad(int original) {
-        XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
-        if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            return original;
-        }
 
-        if (!xray.isOpacityMode() || xray.isVisible(state.getBlock(), pos)) {
-            return original;
-        }
-
-        return original & xray.getOpacityColorMask();
-    }
 }

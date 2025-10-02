@@ -19,8 +19,6 @@ import org.theinfinitys.features.rendering.XRay;
 
 @Mixin(FluidRenderer.class)
 public class XRayFluidRendererMixin {
-    @Unique
-    private static final ThreadLocal<Float> currentOpacity = ThreadLocal.withInitial(() -> 1F);
 
     /**
      * Hides and shows fluids when using X-Ray without Sodium installed.
@@ -45,27 +43,14 @@ public class XRayFluidRendererMixin {
             FluidState fluidState) {
         XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
         if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            currentOpacity.set(1F);
             return original.call(side, height, neighborState);
         }
 
         Boolean shouldDraw = xray.shouldDrawSide(blockState, pos);
         if (shouldDraw != null) {
-            currentOpacity.set(shouldDraw ? 1F : xray.getOpacityFloat());
             return !shouldDraw;
         }
 
-        currentOpacity.set(1F);
         return original.call(side, height, neighborState);
-    }
-
-    /**
-     * Modifies opacity of fluids when using X-Ray without Sodium installed.
-     */
-    @ModifyConstant(
-            method = "vertex(Lnet/minecraft/client/render/VertexConsumer;FFFFFFFFI)V",
-            constant = @Constant(floatValue = 1F, ordinal = 0))
-    private float modifyOpacity(float original) {
-        return currentOpacity.get();
     }
 }
