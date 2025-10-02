@@ -19,28 +19,28 @@ import org.theinfinitys.features.rendering.XRay;
  * 0.6.13+mc1.21.6</a>
  */
 @Pseudo
-@Mixin(targets = {
-        "net.caffeinemc.mods.sodium.client.render.frapi.render.AbstractBlockRenderContext"})
+@Mixin(
+    targets = {"net.caffeinemc.mods.sodium.client.render.frapi.render.AbstractBlockRenderContext"})
 public class XRaySodiumAbstractBlockRenderContextMixin {
-    @Shadow
-    protected BlockState state;
+  @Shadow protected BlockState state;
 
-    @Shadow
-    protected BlockPos pos;
+  @Shadow protected BlockPos pos;
 
-    /**
-     * Hides and shows blocks when using X-Ray with Sodium installed.
-     */
-    @Inject(at = @At("HEAD"), method = "isFaceCulled(Lnet/minecraft/util/math/Direction;)Z", cancellable = true, require = 0)
-    private void onIsFaceCulled(@Nullable Direction face, CallbackInfoReturnable<Boolean> cir) {
-        XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
-        if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            return;
-        }
-
-        Boolean shouldDraw = xray.shouldDrawSide(state, pos);
-        if (shouldDraw != null) {
-            cir.setReturnValue(!shouldDraw);
-        }
+  /** Hides and shows blocks when using X-Ray with Sodium installed. */
+  @Inject(
+      at = @At("HEAD"),
+      method = "isFaceCulled(Lnet/minecraft/util/math/Direction;)Z",
+      cancellable = true,
+      require = 0)
+  private void onIsFaceCulled(@Nullable Direction face, CallbackInfoReturnable<Boolean> cir) {
+    XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
+    if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
+      return;
     }
+
+    Boolean shouldDraw = xray.shouldDrawSide(state, pos);
+    if (shouldDraw != null) {
+      cir.setReturnValue(!shouldDraw);
+    }
+  }
 }

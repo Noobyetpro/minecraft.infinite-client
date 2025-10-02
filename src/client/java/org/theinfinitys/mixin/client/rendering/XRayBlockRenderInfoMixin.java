@@ -16,25 +16,23 @@ import org.theinfinitys.features.rendering.XRay;
 @Pseudo
 @Mixin(value = BlockRenderInfo.class, remap = false)
 public abstract class XRayBlockRenderInfoMixin {
-    @Shadow
-    public BlockPos blockPos;
-    @Shadow
-    public BlockState blockState;
+  @Shadow public BlockPos blockPos;
+  @Shadow public BlockState blockState;
 
-    /**
-     * This mixin hides and shows regular blocks when using X-Ray, if Indigo
-     * is running and Sodium is not installed.
-     */
-    @Inject(at = @At("HEAD"), method = "shouldDrawSide", cancellable = true)
-    private void onShouldDrawSide(Direction face, CallbackInfoReturnable<Boolean> cir) {
-        XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
-        if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            return;
-        }
-
-        Boolean shouldDraw = xray.shouldDrawSide(blockState, blockPos);
-        if (shouldDraw != null) {
-            cir.setReturnValue(shouldDraw);
-        }
+  /**
+   * This mixin hides and shows regular blocks when using X-Ray, if Indigo is running and Sodium is
+   * not installed.
+   */
+  @Inject(at = @At("HEAD"), method = "shouldDrawSide", cancellable = true)
+  private void onShouldDrawSide(Direction face, CallbackInfoReturnable<Boolean> cir) {
+    XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
+    if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
+      return;
     }
+
+    Boolean shouldDraw = xray.shouldDrawSide(blockState, blockPos);
+    if (shouldDraw != null) {
+      cir.setReturnValue(shouldDraw);
+    }
+  }
 }

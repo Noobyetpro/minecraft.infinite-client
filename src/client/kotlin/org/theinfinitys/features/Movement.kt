@@ -1,6 +1,7 @@
 package org.theinfinitys.features
 
 import org.theinfinitys.feature
+import org.theinfinitys.features.movement.FastMove
 import org.theinfinitys.features.movement.Freeze
 import org.theinfinitys.features.movement.SafeWalk
 import org.theinfinitys.features.movement.SuperSprint
@@ -11,6 +12,11 @@ val movement =
             "SuperSprint",
             SuperSprint(),
             "スプリントを拡張します",
+        ),
+        feature(
+            "FastMove",
+            FastMove(),
+            "斜め移動を駆使して移動速度を上昇させます",
         ),
         feature(
             "SafeWalk",

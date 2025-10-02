@@ -1,14 +1,10 @@
 package org.theinfinitys.mixin.client.rendering;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.theinfinitys.InfiniteClient;
-import org.theinfinitys.features.rendering.XRay;
 
 /**
  * Last updated for <a href=
@@ -16,15 +12,11 @@ import org.theinfinitys.features.rendering.XRay;
  * 0.6.13+mc1.21.6</a>
  */
 @Pseudo
-@Mixin(targets = {
-        "net.caffeinemc.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer"},
-        remap = false)
+@Mixin(
+    targets = {"net.caffeinemc.mods.sodium.client.render.chunk.compile.pipeline.BlockRenderer"},
+    remap = false)
 public class XRaySodiumBlockRendererMixin {
-    @Shadow
-    protected BlockState state;
+  @Shadow protected BlockState state;
 
-    @Shadow
-    protected BlockPos pos;
-
-
+  @Shadow protected BlockPos pos;
 }
