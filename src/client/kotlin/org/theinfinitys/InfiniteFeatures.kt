@@ -1,5 +1,6 @@
 package org.theinfinitys
 
+import org.theinfinitys.features.automatic
 import org.theinfinitys.features.fighting
 import org.theinfinitys.features.movement
 import org.theinfinitys.features.rendering
@@ -26,4 +27,5 @@ val featureCategories =
         FeatureCategory("Movement", movement),
         FeatureCategory("Rendering", rendering),
         FeatureCategory("Fighting", fighting),
+        FeatureCategory("Automatic", automatic),
     )

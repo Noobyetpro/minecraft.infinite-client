@@ -18,8 +18,12 @@ object InfiniteClient : ClientModInitializer {
 
     override fun onInitializeClient() {
         InfiniteKeyBind.registerKeybindings()
-
-        ClientPlayConnectionEvents.JOIN.register { _, _, client ->
+        for (category in featureCategories) {
+            for (features in category.features) {
+                (features.instance as? ConfigurableFeature)?.start()
+            }
+        }
+        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
 
             ConfigManager.loadConfig()
 
@@ -34,7 +38,11 @@ object InfiniteClient : ClientModInitializer {
         }
 
         ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
-
+            for (category in featureCategories) {
+                for (features in category.features) {
+                    (features.instance as? ConfigurableFeature)?.stop()
+                }
+            }
             ConfigManager.saveConfig()
         }
 
