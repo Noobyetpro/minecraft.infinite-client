@@ -5,13 +5,14 @@ import org.theinfinitys.InfiniteClient
 import org.theinfinitys.settings.InfiniteSetting
 
 class AIMode : ConfigurableFeature(initialEnabled = false) {
-    override val settings: List<InfiniteSetting<*>> = listOf(
-        InfiniteSetting.BooleanSetting(
-            "AllowPlayerInput",
-            "AIモード中でもプレイヤーの入力を許可します。",
-            false
+    override val settings: List<InfiniteSetting<*>> =
+        listOf(
+            InfiniteSetting.BooleanSetting(
+                "AllowPlayerInput",
+                "AIモード中でもプレイヤーの入力を許可します。",
+                false,
+            ),
         )
-    )
 
     override fun disabled() {
         // AIモードが無効になったら、WoodCutterとVeinMinerを無効化する

@@ -14,9 +14,10 @@ import org.theinfinitys.InfiniteClient // ★ 追加
 import org.theinfinitys.settings.InfiniteSetting
 
 class WoodCutter : ConfigurableFeature(initialEnabled = false) {
-    override val settings: List<InfiniteSetting<*>> = listOf(
-        // 設定をここに記述
-    )
+    override val settings: List<InfiniteSetting<*>> =
+        listOf(
+            // 設定をここに記述
+        )
 
     override fun enabled() {
         // WoodCutterが有効になったら、VeinMinerを無効化する
@@ -26,7 +27,6 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
             InfiniteClient.warn("VeinMinerを無効化しました。WoodCutterと競合します。")
         }
     }
-
 
     private var targetBlockPos: BlockPos? = null
     private var miningProgress = 0
@@ -93,7 +93,8 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
         var nearestDistanceSq = Double.MAX_VALUE
 
         // Minecraftの BlockPos.stream を使用して範囲内の全ての座標を走査
-        BlockPos.stream(player.blockPos.add(-range, -range, -range), player.blockPos.add(range, range, range))
+        BlockPos
+            .stream(player.blockPos.add(-range, -range, -range), player.blockPos.add(range, range, range))
             .filter { pos -> isLog(world.getBlockState(pos)) } // isLogで原木か判定
             .forEach { pos ->
                 val distanceSq = player.squaredDistanceTo(Vec3d.ofCenter(pos))
@@ -167,6 +168,9 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     private fun isLog(state: BlockState): Boolean {
         // Minecraftの Blocks クラスに含まれる原木ブロックで判定
         // Tag判定（BlockTags.LOGS）の方がより汎用性がありますが、シンプルな例として列挙します。
-        return state.block == Blocks.OAK_LOG || state.block == Blocks.SPRUCE_LOG || state.block == Blocks.BIRCH_LOG || state.block == Blocks.JUNGLE_LOG || state.block == Blocks.ACACIA_LOG || state.block == Blocks.DARK_OAK_LOG
+        return state.block == Blocks.OAK_LOG || state.block == Blocks.SPRUCE_LOG || state.block == Blocks.BIRCH_LOG ||
+            state.block == Blocks.JUNGLE_LOG ||
+            state.block == Blocks.ACACIA_LOG ||
+            state.block == Blocks.DARK_OAK_LOG
     }
 }

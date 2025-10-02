@@ -45,6 +45,7 @@ abstract class ConfigurableFeature(
     open fun enabled() {}
 
     open fun disabled() {}
+
     fun enable() {
         enabled.value = true
     }
