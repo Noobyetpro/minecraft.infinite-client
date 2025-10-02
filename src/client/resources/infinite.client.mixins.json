@@ -7,10 +7,13 @@
     "client.rendering.CameraMixin",
     "client.rendering.GameRendererMixin",
     "client.ClientPlayerEntityMixin",
-    "client.rendering.AbstractTerrainRenderContextMixin",
-    "client.rendering.BlockEntityRenderDispatcherMixin",
-    "client.rendering.BlockModelRendererMixin",
-    "client.rendering.BlockRenderInfoMixin"
+    "client.rendering.XRayBlockModelRendererMixin",
+    "client.rendering.XRayBlockRenderInfoMixin",
+    "client.rendering.XRayFluidRendererMixin",
+    "client.rendering.XRayRenderLayersMixin",
+    "client.rendering.XRaySodiumAbstractBlockRenderContextMixin",
+    "client.rendering.XRaySodiumBlockRendererMixin",
+    "client.rendering.XRaySodiumDefaultFluidRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

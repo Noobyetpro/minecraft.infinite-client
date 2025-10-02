@@ -1,12 +1,15 @@
 package org.theinfinitys.features.rendering
 
-import net.minecraft.client.MinecraftClient // Added import
+import net.minecraft.block.Block
+import net.minecraft.block.BlockState
+import net.minecraft.client.MinecraftClient
+import net.minecraft.registry.Registries
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Direction
 import org.theinfinitys.ConfigurableFeature
 import org.theinfinitys.settings.InfiniteSetting
 
 class XRay : ConfigurableFeature(initialEnabled = false) {
-    private var defaultGamma: Double = 0.0
-
     override val settings: List<InfiniteSetting<*>> = listOf(
         InfiniteSetting.BlockListSetting(
             "BlockList",
@@ -96,5 +99,60 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
     override fun disabled() {
         // Trigger world re-render when XRay is disabled
         MinecraftClient.getInstance().worldRenderer.reload()
+    }
+
+    fun getBlockList(): MutableList<String> {
+        return (settings[0] as InfiniteSetting.BlockListSetting).value
+    }
+
+    fun isVisible(block: Block, pos: BlockPos): Boolean {
+        val blockList = getBlockList()
+        val blockId = Registries.BLOCK.getId(block).toString()
+
+        if (blockList.contains(blockId)) {
+            return true
+        }
+
+        val onlyExposed = (settings[1] as InfiniteSetting.BooleanSetting).value
+        if (onlyExposed) {
+            val client = MinecraftClient.getInstance()
+            val world = client.world ?: return false
+
+            for (direction in Direction.values()) {
+                val neighborPos = pos.offset(direction)
+                val neighborState = world.getBlockState(neighborPos)
+                if (neighborState.isAir) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    fun isOpacityMode(): Boolean {
+        return (settings[2] as InfiniteSetting.FloatSetting).value < 1.0f
+    }
+
+    fun getOpacityFloat(): Float {
+        return (settings[2] as InfiniteSetting.FloatSetting).value
+    }
+
+    fun getOpacityColorMask(): Int {
+        val opacity = getOpacityFloat()
+        val alpha = (opacity * 255).toInt() and 0xFF
+        return alpha shl 24 or 0x00FFFFFF // Keep RGB, set A
+    }
+
+    fun shouldDrawSide(blockState: BlockState, blockPos: BlockPos?): Boolean? {
+        if (!enabled.value) return null
+
+        val block = blockState.block
+        val pos = blockPos ?: return null
+
+        if (isOpacityMode()) {
+            return isVisible(block, pos)
+        }
+
+        return null
     }
 }
