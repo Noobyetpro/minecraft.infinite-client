@@ -19,7 +19,7 @@ class InfiniteScreen(
     }
 
     private val uiWidth: Int
-        get() = (width * 0.5).toInt()
+        get() = (width * 0.5).toInt().coerceAtLeast(400)
     private val uiHeight: Int
         get() = (height * 0.8).toInt()
     private val startY: Int
