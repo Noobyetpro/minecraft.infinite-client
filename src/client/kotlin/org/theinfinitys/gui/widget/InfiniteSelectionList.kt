@@ -1,0 +1,68 @@
+package org.theinfinitys.gui.widget
+
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder
+import net.minecraft.client.gui.widget.ClickableWidget
+import net.minecraft.text.Text
+import org.theinfinitys.settings.InfiniteSetting
+
+class InfiniteSelectionList<E : Enum<E>>(
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int,
+    private val setting: InfiniteSetting.EnumSetting<E>,
+) : ClickableWidget(x, y, width, height, Text.literal(setting.name)) {
+    private val textRenderer = MinecraftClient.getInstance().textRenderer
+    private val cycleButton: InfiniteButton
+
+    init {
+        cycleButton =
+            InfiniteButton(
+                x + 5 + textRenderer.getWidth(setting.name) + 5, // Position after label
+                y,
+                width - (5 + textRenderer.getWidth(setting.name) + 5), // Remaining width
+                height,
+                Text.literal(setting.value.name),
+            ) {
+                cycleOption()
+            }
+    }
+
+    private fun cycleOption() {
+        val currentIndex = setting.options.indexOf(setting.value)
+        val nextIndex = (currentIndex + 1) % setting.options.size
+        setting.value = setting.options[nextIndex]
+        cycleButton.message = Text.literal(setting.value.name)
+    }
+
+    override fun renderWidget(
+        context: DrawContext,
+        mouseX: Int,
+        mouseY: Int,
+        delta: Float,
+    ) {
+        context.drawTextWithShadow(
+            textRenderer,
+            Text.literal(setting.name),
+            x + 5,
+            y + (height - 8) / 2,
+            0xFFFFFFFF.toInt(),
+        )
+
+        cycleButton.x = x + 5 + textRenderer.getWidth(setting.name) + 5
+        cycleButton.y = y
+        cycleButton.render(context, mouseX, mouseY, delta)
+    }
+
+    override fun mouseClicked(
+        mouseX: Double,
+        mouseY: Double,
+        button: Int,
+    ): Boolean = cycleButton.mouseClicked(mouseX, mouseY, button)
+
+    override fun appendClickableNarrations(builder: NarrationMessageBuilder) {
+        this.appendDefaultNarrations(builder)
+    }
+}

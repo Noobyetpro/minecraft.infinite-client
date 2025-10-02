@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "org.theinfinitys.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "client.rendering.InGameHudMixin",
+    "client.rendering.CameraMixin",
+    "client.rendering.GameRendererMixin",
+    "client.ClientPlayerEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
