@@ -11,9 +11,6 @@
     "client.rendering.XRayBlockRenderInfoMixin",
     "client.rendering.XRayFluidRendererMixin",
     "client.rendering.XRayRenderLayersMixin",
-    "client.rendering.XRaySodiumAbstractBlockRenderContextMixin",
-    "client.rendering.XRaySodiumBlockRendererMixin",
-    "client.rendering.XRaySodiumDefaultFluidRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
