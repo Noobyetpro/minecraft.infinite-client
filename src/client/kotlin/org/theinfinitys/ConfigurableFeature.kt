@@ -14,11 +14,19 @@ abstract class ConfigurableFeature(
     init {
         enabled.addListener { _, newValue ->
             disabled.value = !newValue
-            enabled()
+            if (newValue) {
+                enabled()
+            } else {
+                disabled()
+            }
         }
         disabled.addListener { _, newValue ->
             enabled.value = !newValue
-            disabled()
+            if (newValue) {
+                disabled()
+            } else {
+                enabled()
+            }
         }
     }
 
@@ -37,6 +45,13 @@ abstract class ConfigurableFeature(
     open fun enabled() {}
 
     open fun disabled() {}
+    fun enable() {
+        enabled.value = true
+    }
+
+    fun disable() {
+        disabled.value = true
+    }
 
     /**
      * 設定の名前で設定を取得します。

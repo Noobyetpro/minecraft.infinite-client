@@ -14,10 +14,19 @@ import org.theinfinitys.InfiniteClient // ★ 追加
 import org.theinfinitys.settings.InfiniteSetting
 
 class WoodCutter : ConfigurableFeature(initialEnabled = false) {
-    override val settings: List<InfiniteSetting<*>> =
-        listOf(
-            // 設定をここに記述
-        )
+    override val settings: List<InfiniteSetting<*>> = listOf(
+        // 設定をここに記述
+    )
+
+    override fun enabled() {
+        // WoodCutterが有効になったら、VeinMinerを無効化する
+        if (InfiniteClient.isFeatureEnabled(VeinMiner::class.java)) {
+            val veinMiner = InfiniteClient.getFeature(VeinMiner::class.java)
+            veinMiner?.enabled?.value = false
+            InfiniteClient.warn("VeinMinerを無効化しました。WoodCutterと競合します。")
+        }
+    }
+
 
     private var targetBlockPos: BlockPos? = null
     private var miningProgress = 0
@@ -53,7 +62,7 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
 
         // 2. ターゲットへ移動と採掘
         if (player.blockPos.isWithinDistance(target, 3.0)) {
-            startMining(client, player, target)
+            startMining(client, target)
         } else {
             // 移動ロジックをここに記述
         }
@@ -66,10 +75,10 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
         MinecraftClient.getInstance().interactionManager?.stopUsingItem(MinecraftClient.getInstance().player)
     }
 
-    // ... (findNearestLog, isLog, isTargetBroken, startMining の各メソッドは変更なし) ...
-    // findNearestLog, isLog, isTargetBroken, startMining の実装は前回の回答を参照してください。
-    // (コードブロックが長くなるため、警告機能に関係のない部分は省略しています)
-    // WoodCutter クラス内に追加するメソッド
+// ... (findNearestLog, isLog, isTargetBroken, startMining の各メソッドは変更なし) ...
+// findNearestLog, isLog, isTargetBroken, startMining の実装は前回の回答を参照してください。
+// (コードブロックが長くなるため、警告機能に関係のない部分は省略しています)
+// WoodCutter クラス内に追加するメソッド
 
     /**
      * 周囲の原木ブロックを探します。
@@ -84,8 +93,7 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
         var nearestDistanceSq = Double.MAX_VALUE
 
         // Minecraftの BlockPos.stream を使用して範囲内の全ての座標を走査
-        BlockPos
-            .stream(player.blockPos.add(-range, -range, -range), player.blockPos.add(range, range, range))
+        BlockPos.stream(player.blockPos.add(-range, -range, -range), player.blockPos.add(range, range, range))
             .filter { pos -> isLog(world.getBlockState(pos)) } // isLogで原木か判定
             .forEach { pos ->
                 val distanceSq = player.squaredDistanceTo(Vec3d.ofCenter(pos))
@@ -115,7 +123,6 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
      */
     private fun startMining(
         client: MinecraftClient,
-        player: ClientPlayerEntity,
         target: BlockPos,
     ) {
         // 【目標】クライアントの InteractionManager を利用して採掘操作をサーバーに送信する。
@@ -123,13 +130,12 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
 
         // 採掘開始パケットに必要な BlockHitResult を作成
         // どの面を叩くかは、ここでは一旦 Direction.DOWN（下）で固定します。
-        val hitResult =
-            BlockHitResult(
-                Vec3d.ofCenter(target),
-                Direction.DOWN,
-                target,
-                false,
-            )
+        BlockHitResult(
+            Vec3d.ofCenter(target),
+            Direction.DOWN,
+            target,
+            false,
+        )
 
         if (miningProgress == 0) {
             // 採掘アニメーションを開始するパケットをサーバーに送信
@@ -161,11 +167,6 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     private fun isLog(state: BlockState): Boolean {
         // Minecraftの Blocks クラスに含まれる原木ブロックで判定
         // Tag判定（BlockTags.LOGS）の方がより汎用性がありますが、シンプルな例として列挙します。
-        return state.block == Blocks.OAK_LOG ||
-            state.block == Blocks.SPRUCE_LOG ||
-            state.block == Blocks.BIRCH_LOG ||
-            state.block == Blocks.JUNGLE_LOG ||
-            state.block == Blocks.ACACIA_LOG ||
-            state.block == Blocks.DARK_OAK_LOG
+        return state.block == Blocks.OAK_LOG || state.block == Blocks.SPRUCE_LOG || state.block == Blocks.BIRCH_LOG || state.block == Blocks.JUNGLE_LOG || state.block == Blocks.ACACIA_LOG || state.block == Blocks.DARK_OAK_LOG
     }
 }

@@ -7,6 +7,7 @@
     "client.rendering.CameraMixin",
     "client.rendering.GameRendererMixin",
     "client.ClientPlayerEntityMixin",
+    "client.rendering.AIModeHudMixin",
     "client.rendering.XRayBlockModelRendererMixin",
     "client.rendering.XRayBlockRenderInfoMixin",
     "client.rendering.XRayFluidRendererMixin",
