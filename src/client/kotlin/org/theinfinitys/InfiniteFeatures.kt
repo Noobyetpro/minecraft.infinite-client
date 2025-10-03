@@ -23,10 +23,11 @@ fun feature(
     description: String,
 ): Feature = Feature(name, instance, description)
 
-val featureCategories = listOf(
-    FeatureCategory("Movement", movement),
-    FeatureCategory("Rendering", rendering),
-    FeatureCategory("Fighting", fighting),
-    FeatureCategory("Automatic", automatic),
-    FeatureCategory("Server", server)
-)
+val featureCategories =
+    listOf(
+        FeatureCategory("Movement", movement),
+        FeatureCategory("Rendering", rendering),
+        FeatureCategory("Fighting", fighting),
+        FeatureCategory("Automatic", automatic),
+        FeatureCategory("Server", server),
+    )

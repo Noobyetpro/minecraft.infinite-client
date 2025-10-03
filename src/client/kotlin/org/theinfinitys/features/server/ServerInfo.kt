@@ -34,5 +34,4 @@ class ServerInfo : ConfigurableFeature(initialEnabled = false) {
         val client = MinecraftClient.getInstance()
         return client.currentServerEntry
     }
-
 }

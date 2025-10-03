@@ -16,48 +16,48 @@ import org.theinfinitys.features.rendering.XRay;
 @Mixin(BlockModelRenderer.class)
 public abstract class XRayBlockModelRendererMixin implements ItemConvertible {
 
-    /**
-     * Makes X-Ray work when neither Sodium nor Indigo are running. Also gets called while Indigo is
-     * running when breaking a block in survival mode or seeing a piston retract.
-     */
-    @WrapOperation(
-            at =
-            @At(
-                    value = "INVOKE",
-                    target =
-                            "Lnet/minecraft/block/Block;shouldDrawSide(Lnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/Direction;)Z"),
-            method =
-                    "shouldDrawFace(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;ZLnet/minecraft/util/math/Direction;Lnet/minecraft/util/math/BlockPos;)Z")
-    private static boolean onRenderSmoothOrFlat(
-            BlockState state, // 現在のブロックの状態 (blockState)
-            BlockState otherState, // 隣接ブロックの状態 (neighborState)
-            Direction side, // チェックしている面 (side)
-            Operation<Boolean> original,
-            BlockRenderView world,
-            BlockState stateButFromTheOtherMethod,
-            boolean cull,
-            Direction sideButFromTheOtherMethod,
-            BlockPos pos // 現在のブロックの座標 (blockPos)
-    ) {
-        XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
+  /**
+   * Makes X-Ray work when neither Sodium nor Indigo are running. Also gets called while Indigo is
+   * running when breaking a block in survival mode or seeing a piston retract.
+   */
+  @WrapOperation(
+      at =
+          @At(
+              value = "INVOKE",
+              target =
+                  "Lnet/minecraft/block/Block;shouldDrawSide(Lnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/Direction;)Z"),
+      method =
+          "shouldDrawFace(Lnet/minecraft/world/BlockRenderView;Lnet/minecraft/block/BlockState;ZLnet/minecraft/util/math/Direction;Lnet/minecraft/util/math/BlockPos;)Z")
+  private static boolean onRenderSmoothOrFlat(
+      BlockState state, // 現在のブロックの状態 (blockState)
+      BlockState otherState, // 隣接ブロックの状態 (neighborState)
+      Direction side, // チェックしている面 (side)
+      Operation<Boolean> original,
+      BlockRenderView world,
+      BlockState stateButFromTheOtherMethod,
+      boolean cull,
+      Direction sideButFromTheOtherMethod,
+      BlockPos pos // 現在のブロックの座標 (blockPos)
+      ) {
+    XRay xray = InfiniteClient.INSTANCE.getFeature(XRay.class);
 
-        // XRayが無効、または取得できない場合は、オリジナルのメソッドを呼び出して終了
-        if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
-            return original.call(state, otherState, side);
-        }
-
-        // shouldDrawSideを新しいシグネチャで呼び出す
-        // shouldDrawSide(現在のブロックの状態, 現在のブロックの座標, チェックしている面, 隣接ブロックの状態)
-        // このフックの引数をそのまま新しい shouldDrawSide メソッドに渡すことができます。
-        Boolean shouldDraw = xray.shouldDrawSide(state, pos, side, otherState);
-
-        // XRay機能が描画ロジックをオーバーライドする場合
-        if (shouldDraw != null) {
-            // shouldDrawSideは「描画すべきかどうか」を返すので、そのまま返す
-            return shouldDraw;
-        }
-
-        // XRay機能が判断しなかった場合は、オリジナルのメソッドを呼び出す
-        return original.call(state, otherState, side);
+    // XRayが無効、または取得できない場合は、オリジナルのメソッドを呼び出して終了
+    if (xray == null || !InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) {
+      return original.call(state, otherState, side);
     }
+
+    // shouldDrawSideを新しいシグネチャで呼び出す
+    // shouldDrawSide(現在のブロックの状態, 現在のブロックの座標, チェックしている面, 隣接ブロックの状態)
+    // このフックの引数をそのまま新しい shouldDrawSide メソッドに渡すことができます。
+    Boolean shouldDraw = xray.shouldDrawSide(state, pos, side, otherState);
+
+    // XRay機能が描画ロジックをオーバーライドする場合
+    if (shouldDraw != null) {
+      // shouldDrawSideは「描画すべきかどうか」を返すので、そのまま返す
+      return shouldDraw;
+    }
+
+    // XRay機能が判断しなかった場合は、オリジナルのメソッドを呼び出す
+    return original.call(state, otherState, side);
+  }
 }

@@ -6,132 +6,142 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.registry.Registries
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
-import net.minecraft.world.World
 import org.theinfinitys.ConfigurableFeature
 import org.theinfinitys.settings.InfiniteSetting
 
-// 新しい列挙型を定義します
 enum class XRayMode {
-    Normal, OnlyExposed, AntiAntiXRay
+    Normal,
+    OnlyExposed,
+    AntiAntiXRay,
 }
 
 class XRay : ConfigurableFeature(initialEnabled = false) {
     // ... (設定の定義は変更なし)
-    override val settings: List<InfiniteSetting<*>> = listOf(
-        InfiniteSetting.EnumSetting(
-            "Method", "XRayの動作モード", XRayMode.Normal, // 初期値はNormal
-            XRayMode.entries.toList() // すべてのオプションのリスト
-        ), InfiniteSetting.BlockListSetting(
-            "ThroughBlockList", "常に透過するブロックのリスト", mutableListOf(
-                "minecraft:water",
-                "minecraft:lava",
-                "minecraft:chest",
-                "minecraft:trapped_chest",
-                "minecraft:ender_chest",
-                "minecraft:barrel",
-                "minecraft:shulker_box", // 各種シュルカーボックスは必要に応じて追加
-                "minecraft:white_shulker_box",
-                "minecraft:orange_shulker_box",
-                "minecraft:magenta_shulker_box",
-                "minecraft:light_blue_shulker_box",
-                "minecraft:yellow_shulker_box",
-                "minecraft:lime_shulker_box",
-                "minecraft:pink_shulker_box",
-                "minecraft:gray_shulker_box",
-                "minecraft:light_gray_shulker_box",
-                "minecraft:cyan_shulker_box",
-                "minecraft:purple_shulker_box",
-                "minecraft:blue_shulker_box",
-                "minecraft:brown_shulker_box",
-                "minecraft:green_shulker_box",
-                "minecraft:red_shulker_box",
-                "minecraft:black_shulker_box",
-                "minecraft:glass",
-                "minecraft:stained_glass", // 各種ステンドグラスは必要に応じて追加
-                "minecraft:glass_pane",
-                "minecraft:stained_glass_pane",
-            )
-        ), InfiniteSetting.BlockListSetting(
-            "ExposedBlockList",
-            "露出している際にXRayで表示するブロックのリスト",
-            mutableListOf(
-                "minecraft:ancient_debris",
-                "minecraft:anvil",
-                "minecraft:beacon",
-                "minecraft:bone_block",
-                "minecraft:bookshelf",
-                "minecraft:brewing_stand",
-                "minecraft:chain_command_block",
-                "minecraft:chest", // ThroughBlockListにもあるが、ExposedBlockListにも残すことで、XRayが有効な時に描画されるようになる
-                "minecraft:clay",
-                "minecraft:coal_block",
-                "minecraft:coal_ore",
-                "minecraft:command_block",
-                "minecraft:copper_ore",
-                "minecraft:crafting_table",
-                "minecraft:deepslate_coal_ore",
-                "minecraft:deepslate_copper_ore",
-                "minecraft:deepslate_diamond_ore",
-                "minecraft:deepslate_emerald_ore",
-                "minecraft:deepslate_gold_ore",
-                "minecraft:deepslate_iron_ore",
-                "minecraft:deepslate_lapis_ore",
-                "minecraft:deepslate_redstone_ore",
-                "minecraft:diamond_block",
-                "minecraft:diamond_ore",
-                "minecraft:dispenser",
-                "minecraft:dropper",
-                "minecraft:emerald_block",
-                "minecraft:emerald_ore",
-                "minecraft:enchanting_table",
-                "minecraft:end_portal",
-                "minecraft:end_portal_frame",
-                "minecraft:ender_chest",
-                "minecraft:furnace",
-                "minecraft:glowstone",
-                "minecraft:gold_block",
-                "minecraft:gold_ore",
-                "minecraft:hopper",
-                "minecraft:iron_block",
-                "minecraft:iron_ore",
-                "minecraft:ladder",
-                "minecraft:lapis_block",
-                "minecraft:lapis_ore",
-                "minecraft:lava",
-                "minecraft:lodestone",
-                "minecraft:mossy_cobblestone",
-                "minecraft:nether_gold_ore",
-                "minecraft:nether_portal",
-                "minecraft:nether_quartz_ore",
-                "minecraft:raw_copper_block",
-                "minecraft:raw_gold_block",
-                "minecraft:raw_iron_block",
-                "minecraft:redstone_block",
-                "minecraft:redstone_ore",
-                "minecraft:repeating_command_block",
-                "minecraft:spawner",
-                "minecraft:suspicous_sand",
-                "minecraft:tnt",
-                "minecraft:torch",
-                "minecraft:trapped_chest",
-                "minecraft:water",
+    override val settings: List<InfiniteSetting<*>> =
+        listOf(
+            InfiniteSetting.EnumSetting(
+                "Method",
+                "XRayの動作モード",
+                XRayMode.Normal, // 初期値はNormal
+                XRayMode.entries.toList(), // すべてのオプションのリスト
             ),
-        ), InfiniteSetting.BlockListSetting(
-            "ReplacedBlockList", "AntiXRayで入れ替えられた鉱石ブロックのリスト", mutableListOf(
-                "minecraft:stone",
-                "minecraft:cobblestone",
-                "minecraft:deepslate",
-                "minecraft:cobbled_deepslate",
-                "minecraft:gravel",
-                "minecraft:dirt",
-                "minecraft:granite",
-                "minecraft:diorite",
-                "minecraft:andesite",
-                "minecraft:tuff",
-                "minecraft:calcite",
-            )
+            InfiniteSetting.BlockListSetting(
+                "ThroughBlockList",
+                "常に透過するブロックのリスト",
+                mutableListOf(
+                    "minecraft:water",
+                    "minecraft:lava",
+                    "minecraft:chest",
+                    "minecraft:trapped_chest",
+                    "minecraft:ender_chest",
+                    "minecraft:barrel",
+                    "minecraft:shulker_box", // 各種シュルカーボックスは必要に応じて追加
+                    "minecraft:white_shulker_box",
+                    "minecraft:orange_shulker_box",
+                    "minecraft:magenta_shulker_box",
+                    "minecraft:light_blue_shulker_box",
+                    "minecraft:yellow_shulker_box",
+                    "minecraft:lime_shulker_box",
+                    "minecraft:pink_shulker_box",
+                    "minecraft:gray_shulker_box",
+                    "minecraft:light_gray_shulker_box",
+                    "minecraft:cyan_shulker_box",
+                    "minecraft:purple_shulker_box",
+                    "minecraft:blue_shulker_box",
+                    "minecraft:brown_shulker_box",
+                    "minecraft:green_shulker_box",
+                    "minecraft:red_shulker_box",
+                    "minecraft:black_shulker_box",
+                    "minecraft:glass",
+                    "minecraft:stained_glass", // 各種ステンドグラスは必要に応じて追加
+                    "minecraft:glass_pane",
+                    "minecraft:stained_glass_pane",
+                ),
+            ),
+            InfiniteSetting.BlockListSetting(
+                "ExposedBlockList",
+                "露出している際にXRayで表示するブロックのリスト",
+                mutableListOf(
+                    "minecraft:ancient_debris",
+                    "minecraft:anvil",
+                    "minecraft:beacon",
+                    "minecraft:bone_block",
+                    "minecraft:bookshelf",
+                    "minecraft:brewing_stand",
+                    "minecraft:chain_command_block",
+                    "minecraft:chest", // ThroughBlockListにもあるが、ExposedBlockListにも残すことで、XRayが有効な時に描画されるようになる
+                    "minecraft:clay",
+                    "minecraft:coal_block",
+                    "minecraft:coal_ore",
+                    "minecraft:command_block",
+                    "minecraft:copper_ore",
+                    "minecraft:crafting_table",
+                    "minecraft:deepslate_coal_ore",
+                    "minecraft:deepslate_copper_ore",
+                    "minecraft:deepslate_diamond_ore",
+                    "minecraft:deepslate_emerald_ore",
+                    "minecraft:deepslate_gold_ore",
+                    "minecraft:deepslate_iron_ore",
+                    "minecraft:deepslate_lapis_ore",
+                    "minecraft:deepslate_redstone_ore",
+                    "minecraft:diamond_block",
+                    "minecraft:diamond_ore",
+                    "minecraft:dispenser",
+                    "minecraft:dropper",
+                    "minecraft:emerald_block",
+                    "minecraft:emerald_ore",
+                    "minecraft:enchanting_table",
+                    "minecraft:end_portal",
+                    "minecraft:end_portal_frame",
+                    "minecraft:ender_chest",
+                    "minecraft:furnace",
+                    "minecraft:glowstone",
+                    "minecraft:gold_block",
+                    "minecraft:gold_ore",
+                    "minecraft:hopper",
+                    "minecraft:iron_block",
+                    "minecraft:iron_ore",
+                    "minecraft:ladder",
+                    "minecraft:lapis_block",
+                    "minecraft:lapis_ore",
+                    "minecraft:lava",
+                    "minecraft:lodestone",
+                    "minecraft:mossy_cobblestone",
+                    "minecraft:nether_gold_ore",
+                    "minecraft:nether_portal",
+                    "minecraft:nether_quartz_ore",
+                    "minecraft:raw_copper_block",
+                    "minecraft:raw_gold_block",
+                    "minecraft:raw_iron_block",
+                    "minecraft:redstone_block",
+                    "minecraft:redstone_ore",
+                    "minecraft:repeating_command_block",
+                    "minecraft:spawner",
+                    "minecraft:suspicous_sand",
+                    "minecraft:tnt",
+                    "minecraft:torch",
+                    "minecraft:trapped_chest",
+                    "minecraft:water",
+                ),
+            ),
+            InfiniteSetting.BlockListSetting(
+                "ReplacedBlockList",
+                "AntiXRayで入れ替えられた鉱石ブロックのリスト",
+                mutableListOf(
+                    "minecraft:stone",
+                    "minecraft:cobblestone",
+                    "minecraft:deepslate",
+                    "minecraft:cobbled_deepslate",
+                    "minecraft:gravel",
+                    "minecraft:dirt",
+                    "minecraft:granite",
+                    "minecraft:diorite",
+                    "minecraft:andesite",
+                    "minecraft:tuff",
+                    "minecraft:calcite",
+                ),
+            ),
         )
-    )
 
     // ... (enabled/disabled関数は変更なし)
     override fun enabled() {
@@ -146,7 +156,9 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
 
     // 設定リストを取得する補助関数
     private fun getThroughBlockList(): Set<String> = (settings[1] as InfiniteSetting.BlockListSetting).value.toSet()
+
     private fun getExposedBlockList(): Set<String> = (settings[2] as InfiniteSetting.BlockListSetting).value.toSet()
+
     private fun getReplacedBlockList(): Set<String> = (settings[3] as InfiniteSetting.BlockListSetting).value.toSet()
 
     /**
@@ -188,9 +200,7 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
     }
 
     // ★ 補助関数: ブロックIDがNormalモードのターゲットであるかを判定
-    private fun isNormalModeTarget(blockId: String): Boolean {
-        return isXRayTarget(blockId)
-    }
+    private fun isNormalModeTarget(blockId: String): Boolean = isXRayTarget(blockId)
 
     // ★ 補助関数: ブロックIDがOnlyExposedモードのターゲットであるかを判定
     private fun isOnlyExposedModeTarget(blockId: String): Boolean {
@@ -205,7 +215,6 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
         return isXRayTarget(blockId) || replacedList.contains(blockId)
     }
 
-
     /**
      * 描画されるブロックの特定の面を描画するかどうかを判断します。
      * Normalモード: ブロック自体がExposed/Throughに含まれ、かつ隣接ブロックがExposed/Throughに含まれていなければ描画。
@@ -217,7 +226,7 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
         blockState: BlockState,
         blockPos: BlockPos,
         side: Direction,
-        neighborState: BlockState
+        neighborState: BlockState,
     ): Boolean? {
         if (!isEnabled()) return null
 
@@ -245,7 +254,6 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
                 val isNeighborTarget = isNormalModeTarget(neighborBlockId)
 
                 if (isCurrentTarget) {
-                    // Normalモードのロジック: 隣接ブロックがXRay対象でなければ描画
                     !isNeighborTarget
                 } else {
                     false
@@ -265,9 +273,9 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
 
                 // 露出ロジック（カリングチェックを通過した場合に適用）
                 if (throughList.contains(blockId)) {
-                    true // Throughは常に描画
+                    true // Throughは常に描画 **<-- 修正済み**
                 } else if (exposedList.contains(blockId)) {
-                    isNeighborAir // Exposedは隣接が空気なら描画
+                    isNeighborAir // Exposedは隣接が空気なら描画 **<-- 修正済み**
                 } else {
                     false
                 }
@@ -286,14 +294,10 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
 
                 // 露出ロジック（カリングチェックを通過した場合に適用）
                 if (throughList.contains(blockId)) {
-                    true // Throughは常に描画
-                }
-                // Exposedブロックは露出時（隣接が空気）に描画
-                else if (exposedList.contains(blockId)) {
+                    true // Throughは常に描画 **<-- 修正済み**
+                } else if (exposedList.contains(blockId)) {
                     isNeighborAir
-                }
-                // Replacedブロックは露出時**ではない**場合（隣接が非空気）に描画
-                else if (replacedList.contains(blockId)) {
+                } else if (replacedList.contains(blockId)) {
                     !isNeighborAir
                 } else {
                     false

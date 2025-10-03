@@ -57,13 +57,9 @@ abstract class ConfigurableFeature(
         disabled.value = true
     }
 
-    fun isEnabled(): Boolean {
-        return enabled.value
-    }
+    fun isEnabled(): Boolean = enabled.value
 
-    fun isDisabled(): Boolean {
-        return disabled.value
-    }
+    fun isDisabled(): Boolean = disabled.value
 
     /**
      * 設定の名前で設定を取得します。
