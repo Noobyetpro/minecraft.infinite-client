@@ -4,8 +4,8 @@ import net.minecraft.block.BlockState
 import net.minecraft.block.Blocks
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayerEntity
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.item.AxeItem
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket
 import net.minecraft.util.Hand
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
@@ -18,26 +18,33 @@ import org.theinfinitys.features.automatic.WoodCutter.Facing
 import org.theinfinitys.features.automatic.WoodCutter.SwingHand
 import org.theinfinitys.settings.InfiniteSetting
 import java.util.ArrayDeque
-import net.minecraft.client.option.KeyBinding
-import net.minecraft.client.world.ClientWorld
 
 class WoodCutter : ConfigurableFeature(initialEnabled = false) {
-
     private var currentTree: Tree? = null // To store the currently targeted tree
 
-    data class Tree(val stump: BlockPos, val logs: MutableList<BlockPos>)
+    data class Tree(
+        val stump: BlockPos,
+        val logs: MutableList<BlockPos>,
+    )
 
     /**
      * ブロックが葉ブロックかどうかを判定します。
      */
-    private fun isLeaves(state: BlockState): Boolean {
-        return state.block == Blocks.OAK_LEAVES || state.block == Blocks.SPRUCE_LEAVES || state.block == Blocks.BIRCH_LEAVES || state.block == Blocks.JUNGLE_LEAVES || state.block == Blocks.ACACIA_LEAVES || state.block == Blocks.DARK_OAK_LEAVES
-    }
+    private fun isLeaves(state: BlockState): Boolean =
+        state.block == Blocks.OAK_LEAVES ||
+            state.block == Blocks.SPRUCE_LEAVES ||
+            state.block == Blocks.BIRCH_LEAVES ||
+            state.block == Blocks.JUNGLE_LEAVES ||
+            state.block == Blocks.ACACIA_LEAVES ||
+            state.block == Blocks.DARK_OAK_LEAVES
 
     /**
      * 指定されたブロック位置の周囲の原木ブロックを取得します。
      */
-    private fun getNeighbors(pos: BlockPos, world: net.minecraft.client.world.ClientWorld): List<BlockPos> {
+    private fun getNeighbors(
+        pos: BlockPos,
+        world: net.minecraft.client.world.ClientWorld,
+    ): List<BlockPos> {
         val neighbors = mutableListOf<BlockPos>()
         for (x in -1..1) {
             for (y in -1..1) {
@@ -56,7 +63,10 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     /**
      * 指定された切り株から木全体を解析し、すべての原木ブロックを特定します。
      */
-    private fun analyzeTree(stump: BlockPos, world: net.minecraft.client.world.ClientWorld): Tree {
+    private fun analyzeTree(
+        stump: BlockPos,
+        world: net.minecraft.client.world.ClientWorld,
+    ): Tree {
         val logs = mutableListOf<BlockPos>()
         val queue = ArrayDeque<BlockPos>()
 
@@ -80,7 +90,10 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     }
 
     enum class Facing {
-        OFF, SERVER_SIDE, CLIENT_SIDE;
+        OFF,
+        SERVER_SIDE,
+        CLIENT_SIDE,
+        ;
 
         fun face(hitVec: Vec3d) {
             // TODO: Implement facing logic based on the selected mode
@@ -90,28 +103,41 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     }
 
     enum class SwingHand {
-        MAIN_HAND, OFF_HAND, SERVER;
+        MAIN_HAND,
+        OFF_HAND,
+        SERVER,
+        ;
 
-        fun swing(player: ClientPlayerEntity, hand: Hand) {
+        fun swing(
+            player: ClientPlayerEntity,
+            hand: Hand,
+        ) {
             player.swingHand(hand)
         }
     }
 
-    override val settings: List<InfiniteSetting<*>> = listOf(
-        InfiniteSetting.FloatSetting(
-            "Range", "How far WoodCutter will reach to break blocks.", 4.5f, 1f, 6f
-        ), InfiniteSetting.EnumSetting(
-            "Facing",
-            "How WoodCutter should face the logs and leaves when breaking them.",
-            Facing.SERVER_SIDE,
-            listOf(Facing.OFF, Facing.SERVER_SIDE, Facing.CLIENT_SIDE)
-        ), InfiniteSetting.EnumSetting(
-            "Swing Hand",
-            "Which hand WoodCutter should swing.",
-            SwingHand.SERVER,
-            listOf(SwingHand.MAIN_HAND, SwingHand.OFF_HAND, SwingHand.SERVER)
+    override val settings: List<InfiniteSetting<*>> =
+        listOf(
+            InfiniteSetting.FloatSetting(
+                "Range",
+                "How far WoodCutter will reach to break blocks.",
+                4.5f,
+                1f,
+                6f,
+            ),
+            InfiniteSetting.EnumSetting(
+                "Facing",
+                "How WoodCutter should face the logs and leaves when breaking them.",
+                Facing.SERVER_SIDE,
+                listOf(Facing.OFF, Facing.SERVER_SIDE, Facing.CLIENT_SIDE),
+            ),
+            InfiniteSetting.EnumSetting(
+                "Swing Hand",
+                "Which hand WoodCutter should swing.",
+                SwingHand.SERVER,
+                listOf(SwingHand.MAIN_HAND, SwingHand.OFF_HAND, SwingHand.SERVER),
+            ),
         )
-    )
 
     override fun enabled() {
         // WoodCutterが有効になったら、VeinMinerを無効化する
@@ -180,7 +206,10 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
      * プレイヤーのキー操作をシミュレートします。
      */
     private fun moveToTarget(
-        client: MinecraftClient, player: ClientPlayerEntity, world: ClientWorld, target: BlockPos
+        client: MinecraftClient,
+        player: ClientPlayerEntity,
+        world: ClientWorld,
+        target: BlockPos,
     ) {
         val options = client.options
         val playerPos = player.pos
@@ -241,7 +270,8 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
         var nearestDistanceSq = Double.MAX_VALUE
 
         // Minecraftの BlockPos.stream を使用して範囲内の全ての座標を走査
-        BlockPos.stream(player.blockPos.add(-range, -range, -range), player.blockPos.add(range, range, range))
+        BlockPos
+            .stream(player.blockPos.add(-range, -range, -range), player.blockPos.add(range, range, range))
             .filter { pos -> isLog(world.getBlockState(pos)) } // isLogで原木か判定
             .forEach { pos ->
                 val distanceSq = player.squaredDistanceTo(Vec3d.ofCenter(pos))
@@ -315,6 +345,11 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     private fun isLog(state: BlockState): Boolean {
         // Minecraftの Blocks クラスに含まれる原木ブロックで判定
         // Tag判定（BlockTags.LOGS）の方がより汎用性がありますが、シンプルな例として列挙します。
-        return state.block == Blocks.OAK_LOG || state.block == Blocks.SPRUCE_LOG || state.block == Blocks.BIRCH_LOG || state.block == Blocks.JUNGLE_LOG || state.block == Blocks.ACACIA_LOG || state.block == Blocks.DARK_OAK_LOG
+        return state.block == Blocks.OAK_LOG ||
+            state.block == Blocks.SPRUCE_LOG ||
+            state.block == Blocks.BIRCH_LOG ||
+            state.block == Blocks.JUNGLE_LOG ||
+            state.block == Blocks.ACACIA_LOG ||
+            state.block == Blocks.DARK_OAK_LOG
     }
 }
