@@ -12,6 +12,8 @@
     "client.rendering.XRayBlockRenderInfoMixin",
     "client.rendering.XRayFluidRendererMixin",
     "client.rendering.XRayRenderLayersMixin",
+    "client.FastBreakMixin",
+    "client.ClientPlayerInteractionManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,6 +1,9 @@
 package org.theinfinitys.features
 
 import org.theinfinitys.feature
+import org.theinfinitys.features.movement.AutoMine
+import org.theinfinitys.features.movement.AutoWalk
+import org.theinfinitys.features.movement.FastBreak
 import org.theinfinitys.features.movement.FastMove
 import org.theinfinitys.features.movement.Freeze
 import org.theinfinitys.features.movement.SafeWalk
@@ -26,6 +29,21 @@ val movement =
         feature(
             "Freeze",
             Freeze(),
-            "有効にしている間は、サーバーにデータを送信しません。",
+            "有効にしている間は、サーバーにデータを送信しません",
+        ),
+        feature(
+            "AutoWalk",
+            AutoWalk(),
+            "自動で前進します",
+        ),
+        feature(
+            "AutoMine",
+            AutoMine(),
+            "自動でブロックを採掘します",
+        ),
+        feature(
+            "FastBreak",
+            FastBreak(),
+            "ブロックを壊す際のインターバルを削除します",
         ),
     )
