@@ -12,7 +12,6 @@ import org.theinfinitys.settings.InfiniteSetting
 enum class XRayMode {
     Normal,
     OnlyExposed,
-    AntiAntiXRay,
 }
 
 class XRay : ConfigurableFeature(initialEnabled = false) {
@@ -124,23 +123,6 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
                     "minecraft:water",
                 ),
             ),
-            InfiniteSetting.BlockListSetting(
-                "ReplacedBlockList",
-                "AntiXRayで入れ替えられた鉱石ブロックのリスト",
-                mutableListOf(
-                    "minecraft:stone",
-                    "minecraft:cobblestone",
-                    "minecraft:deepslate",
-                    "minecraft:cobbled_deepslate",
-                    "minecraft:gravel",
-                    "minecraft:dirt",
-                    "minecraft:granite",
-                    "minecraft:diorite",
-                    "minecraft:andesite",
-                    "minecraft:tuff",
-                    "minecraft:calcite",
-                ),
-            ),
         )
 
     // ... (enabled/disabled関数は変更なし)
@@ -159,8 +141,6 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
 
     private fun getExposedBlockList(): Set<String> = (settings[2] as InfiniteSetting.BlockListSetting).value.toSet()
 
-    private fun getReplacedBlockList(): Set<String> = (settings[3] as InfiniteSetting.BlockListSetting).value.toSet()
-
     /**
      * ブロックがXRayで描画されるべきかどうか（全体として）を判断します。
      * この関数は、ブロックがリストに明示的に含まれているかのみをチェックします。
@@ -172,19 +152,12 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
         val blockId = Registries.BLOCK.getId(block).toString()
         val throughList = getThroughBlockList()
         val exposedList = getExposedBlockList()
-        val replacedList = getReplacedBlockList()
 
         // 描画リストに明示的に含まれているブロックのみを対象とする
         if (throughList.contains(blockId)) {
             return true
         }
         if (exposedList.contains(blockId)) {
-            return true
-        }
-
-        // AntiAntiXRayモードの場合のみ、ReplacedBlockListに含まれるブロックも対象にする
-        val method = getSetting("Method")?.value as? XRayMode
-        if (method == XRayMode.AntiAntiXRay && replacedList.contains(blockId)) {
             return true
         }
 
@@ -209,12 +182,6 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
         return throughList.contains(blockId) || exposedList.contains(blockId)
     }
 
-    // ★ 補助関数: ブロックIDがAntiAntiXRayモードのターゲットであるかを判定
-    private fun isAntiAntiXRayModeTarget(blockId: String): Boolean {
-        val replacedList = getReplacedBlockList()
-        return isXRayTarget(blockId) || replacedList.contains(blockId)
-    }
-
     /**
      * 描画されるブロックの特定の面を描画するかどうかを判断します。
      * Normalモード: ブロック自体がExposed/Throughに含まれ、かつ隣接ブロックがExposed/Throughに含まれていなければ描画。
@@ -236,7 +203,6 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
 
         val throughList = getThroughBlockList()
         val exposedList = getExposedBlockList()
-        val replacedList = getReplacedBlockList()
 
         val neighborBlockId = Registries.BLOCK.getId(neighborState.block).toString()
         val isNeighborAir = neighborBlockId == "minecraft:air"
@@ -276,29 +242,6 @@ class XRay : ConfigurableFeature(initialEnabled = false) {
                     true // Throughは常に描画 **<-- 修正済み**
                 } else if (exposedList.contains(blockId)) {
                     isNeighborAir // Exposedは隣接が空気なら描画 **<-- 修正済み**
-                } else {
-                    false
-                }
-            }
-
-            XRayMode.AntiAntiXRay -> {
-                val isCurrentTarget = isAntiAntiXRayModeTarget(blockId)
-                val isNeighborTarget = isAntiAntiXRayModeTarget(neighborBlockId)
-
-                if (!isCurrentTarget) return false // 再チェック
-
-                // ★ 同種カテゴリのカリング: 隣接ブロックが同じAntiAntiXRay対象なら描画しない
-                if (isNeighborTarget) {
-                    return false
-                }
-
-                // 露出ロジック（カリングチェックを通過した場合に適用）
-                if (throughList.contains(blockId)) {
-                    true // Throughは常に描画 **<-- 修正済み**
-                } else if (exposedList.contains(blockId)) {
-                    isNeighborAir
-                } else if (replacedList.contains(blockId)) {
-                    !isNeighborAir
                 } else {
                     false
                 }
