@@ -21,8 +21,8 @@ public abstract class GameRendererMixin {
       cancellable = true)
   private static void onGetNightVisionStrength(
       LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> cir) {
-    if (InfiniteClient.INSTANCE.isSettingEnabled(SuperSight.class, "FullBright") || InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class))
-      cir.setReturnValue(1.0f);
+    if (InfiniteClient.INSTANCE.isSettingEnabled(SuperSight.class, "FullBright")
+        || InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class)) cir.setReturnValue(1.0f);
   }
 
   @Inject(
