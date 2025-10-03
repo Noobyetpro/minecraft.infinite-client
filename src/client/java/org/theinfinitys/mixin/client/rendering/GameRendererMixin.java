@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.theinfinitys.InfiniteClient;
 import org.theinfinitys.features.rendering.CameraConfig;
 import org.theinfinitys.features.rendering.SuperSight;
+import org.theinfinitys.features.rendering.XRay;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
@@ -20,7 +21,7 @@ public abstract class GameRendererMixin {
       cancellable = true)
   private static void onGetNightVisionStrength(
       LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> cir) {
-    if (InfiniteClient.INSTANCE.isSettingEnabled(SuperSight.class, "FullBright"))
+    if (InfiniteClient.INSTANCE.isSettingEnabled(SuperSight.class, "FullBright") || InfiniteClient.INSTANCE.isFeatureEnabled(XRay.class))
       cir.setReturnValue(1.0f);
   }
 
