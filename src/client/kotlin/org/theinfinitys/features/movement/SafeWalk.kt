@@ -21,25 +21,14 @@ class SafeWalk : ConfigurableFeature(initialEnabled = false) {
     // --- 内部状態 ---
     private var sneaking = false // 現在、SafeWalkによってスニーク状態にあるか
 
-    init {
-        // enabledプロパティの変更を購読し、onEnable/onDisable相当の処理を行う
-        enabled.addListener { _, isNowEnabled ->
-            if (isNowEnabled) {
-                onEnable()
-            } else {
-                onDisable()
-            }
-        }
-    }
-
     // Wurst Clientの onEnable に相当する処理
-    private fun onEnable() {
+    override fun enabled() {
         // Wurst Clientと同様に、他のMod（例: ParkourHack）を無効化する処理があればここに追加
         sneaking = false
     }
 
     // Wurst Clientの onDisable に相当する処理
-    private fun onDisable() {
+    override fun disabled() {
         if (sneaking) {
             setSneaking(false)
         }
