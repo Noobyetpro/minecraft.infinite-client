@@ -13,10 +13,7 @@ abstract class ConfigurableFeature(
     private val disabled: Property<Boolean> = Property(!initialEnabled)
     val toggleKeyBind: Property<Int> = Property(GLFW.GLFW_DONT_CARE)
 
-    // リスナーの同期に使用する専用のロックオブジェクト
     private val listenerLock = Any()
-
-    // 依存関係・矛盾関係のリスナーを保持するリスト
     private val dependencyListeners = mutableListOf<() -> Unit>()
 
     init {
@@ -24,8 +21,7 @@ abstract class ConfigurableFeature(
         enabled.addListener { _, newValue ->
             disabled.value = !newValue
             if (newValue) {
-                // 依存・矛盾の即時解決
-                resolve()
+                // resolve() の呼び出しは enable() 内に移動済み
                 enabled()
             } else {
                 disabled()
@@ -38,9 +34,7 @@ abstract class ConfigurableFeature(
             if (newValue) {
                 disabled()
             } else {
-                // enabled.value = false から true に戻る場合 (通常は enable() 経由)
-                resolve()
-                enabled()
+                // enabled.value = false から true に戻る場合の処理は不要
             }
         }
     }
@@ -52,71 +46,58 @@ abstract class ConfigurableFeature(
 
     abstract val settings: List<InfiniteSetting<*>>
 
-    // 論理積 (AND) 依存: 全て有効である必要がある
+    // 論理積 (AND) 依存: 全て有効である必要がある（自動有効化の対象）
     open val depends: List<Class<out ConfigurableFeature>> = emptyList()
 
-    // 【新規】論理和 (OR) 依存: どれか一つ有効であれば良い
-    open val dependsOneOf: List<Class<out ConfigurableFeature>> = emptyList()
+    // 【削除】論理和 (OR) 依存: dependsOneOf プロパティを削除
 
     // 矛盾関係
     open val conflicts: List<Class<out ConfigurableFeature>> = emptyList()
 
     open fun tick() {}
     open fun start() {}
+    open fun stop() {}
+    open fun enabled() {}
+    open fun disabled() {}
+
+    // --- リスナー登録用API ---
+    fun addEnabledChangeListener(listener: (oldValue: Boolean, newValue: Boolean) -> Unit) {
+        enabled.addListener(listener)
+    }
+
+    fun removeEnabledChangeListener(listener: (oldValue: Boolean, newValue: Boolean) -> Unit) {
+        enabled.removeListener(listener)
+    }
 
     /**
      * Featureの依存関係の監視を開始する処理（リスナー登録）
      */
     private fun startResolver() {
         synchronized(listenerLock) {
-            // --- 1. 論理和 (OR) 依存の監視 ---
-            for (dependOr in dependsOneOf) {
-                val feature = InfiniteClient.getFeature(dependOr) ?: continue
-
-                // OR依存のFeatureが無効になったとき、依存関係のいずれかがまだ有効かチェック
-                val listener: (Boolean, Boolean) -> Unit = { _, newDisabled ->
-                    if (newDisabled && isEnabled()) {
-                        if (!canBeEnabledByOrDependencies()) {
-                            // 有効化できる依存が一つもなくなったら、この Feature を Disable にする
-                            disable()
-                        }
-                    }
-                }
-                feature.disabled.addListener(listener)
-                dependencyListeners.add { feature.disabled.removeListener(listener) }
-            }
-            // --- 2. 論理積 (AND) 依存の監視 ---
+            // --- 1. 論理積 (AND) 依存の監視 ---
             for (depend in depends) {
                 val feature = InfiniteClient.getFeature(depend) ?: continue
                 val listener: (Boolean, Boolean) -> Unit = { _, newDisabled ->
-                    if (newDisabled && isEnabled()) {
-                        disable()
-                    }
+                    if (newDisabled && isEnabled()) { disable() } // 依存先が切れたら自身も無効化
                 }
                 feature.disabled.addListener(listener)
                 dependencyListeners.add { feature.disabled.removeListener(listener) }
             }
 
-            // --- 3. 矛盾関係の監視 ---
+            // --- 2. 矛盾関係の監視 ---
             for (conflict in conflicts) {
                 val feature = InfiniteClient.getFeature(conflict) ?: continue
                 val listener: (Boolean, Boolean) -> Unit = { _, newEnabled ->
-                    if (newEnabled && isEnabled()) {
-                        disable()
-                    }
+                    if (newEnabled && isEnabled()) { disable() } // 矛盾先が有効化されたら自身を無効化
                 }
                 feature.enabled.addListener(listener)
                 dependencyListeners.add { feature.enabled.removeListener(listener) }
             }
 
+            // 【削除】論理和 (OR) 依存の監視ロジックを削除
         }
     }
 
-    open fun stop() {}
-
-    /**
-     * Featureの依存関係の監視を停止する処理（リスナー解除）
-     */
     private fun stopResolver() {
         synchronized(listenerLock) {
             dependencyListeners.forEach { it() }
@@ -124,24 +105,44 @@ abstract class ConfigurableFeature(
         }
     }
 
-    open fun enabled() {}
-    open fun disabled() {}
+    // 【削除】canBeEnabledByOrDependencies() メソッドを削除
 
-    fun enable() {
-        if (isEnabled() || !checkDependOneOf()) return
-        // 1. 依存関係の監視を開始し、リスナーを登録
-        startResolver()
-        // 2. プロパティの値を変更 (enabledリスナーが発火し、resolve()を実行)
-        enabled.value = true
+    /**
+     * このFeatureが有効になったときに、依存・矛盾を解決する
+     */
+    private fun resolve() {
+        // AND依存の解決: 依存先を自動的に Enable にして、満たす
+        for (depend in depends) {
+            val feature = InfiniteClient.getFeature(depend) ?: continue
+            if (feature.isDisabled()) {
+                feature.enable()
+            }
+        }
+
+        // 矛盾関係の解決: 矛盾先を Disable にする
+        for (conflict in conflicts) {
+            val feature = InfiniteClient.getFeature(conflict) ?: continue
+            if (feature.isEnabled()) {
+                feature.disable()
+            }
+        }
     }
 
-    private fun checkDependOneOf(): Boolean {
-        var result = false
-        for (dependOr in dependsOneOf) {
-            val feature = InfiniteClient.getFeature(dependOr) ?: continue
-            result = result || feature.isEnabled()
-        }
-        return result
+    // --- パブリック API ---
+
+    fun enable() {
+        if (isEnabled()) return
+
+        // 【削除】OR依存の前提条件チェックを削除 (dependsOneOfが存在しないため)
+
+        // 1. 依存関係の監視を開始し、リスナーを登録
+        startResolver()
+
+        // 2. 依存関係と矛盾関係を解決する (AND依存の自動有効化、矛盾の無効化)
+        resolve()
+
+        // 3. プロパティの値を変更 (enabledリスナーが発火し、enabled()を実行)
+        enabled.value = true
     }
 
     fun disable() {
@@ -158,41 +159,4 @@ abstract class ConfigurableFeature(
 
     fun getSetting(name: String): InfiniteSetting<*>? = settings.find { it.name == name }
     open fun registerCommands(dispatcher: CommandDispatcher<FabricClientCommandSource>) {}
-
-    /**
-     * dependsOneOf のいずれかの Feature が有効かどうかをチェックする。
-     */
-    private fun canBeEnabledByOrDependencies(): Boolean {
-        // dependsOneOf が設定されていない場合、条件は常に満たされている
-        if (dependsOneOf.isEmpty()) return true
-
-        // OR依存の Feature を一つでも見つけたら true
-        return dependsOneOf.any { dependClass ->
-            InfiniteClient.getFeature(dependClass)?.isEnabled() == true
-        }
-    }
-
-    /**
-     * このFeatureが有効になったときに、依存・矛盾を解決する（依存Enable、矛盾Disable）
-     */
-    private fun resolve() {
-        // --- 1. 論理積 (AND) 依存の解決: 依存先を Enable にする ---
-        for (depend in depends) {
-            val feature = InfiniteClient.getFeature(depend) ?: continue
-            if (feature.isDisabled()) {
-                feature.enable()
-            }
-        }
-
-        // --- 2. 矛盾関係の解決: 矛盾先を Disable にする ---
-        for (conflict in conflicts) {
-            val feature = InfiniteClient.getFeature(conflict) ?: continue
-            if (feature.isEnabled()) {
-                feature.disable()
-            }
-        }
-
-        // --- 3. 論理和 (OR) 依存の解決: OR依存の Feature は自動的に Enable にしない ---
-        // (どれか一つが有効であれば良いため、自身が Enable になるときに依存先を強制するロジックは不要)
-    }
 }

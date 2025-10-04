@@ -12,6 +12,5 @@ class AIMode : ConfigurableFeature(initialEnabled = false) {
                 false,
             ),
         )
-    override val dependsOneOf: List<Class<out ConfigurableFeature>> =
-        listOf(VeinMiner::class.java, WoodCutter::class.java)
+
 }

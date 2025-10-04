@@ -127,8 +127,4 @@ class InfiniteToggleButton(
     fun setState(newState: Boolean) {
         state = newState
     }
-
-    fun setEnabled(enabled: Boolean) {
-        isEnabled = enabled
-    }
 }

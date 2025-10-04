@@ -72,7 +72,7 @@ class InfiniteFeatureToggle(
             }
 
         // Add listener to update toggle button when feature.enabled changes
-        configurableFeature.enabled.addListener { _, newValue ->
+        configurableFeature.addEnabledChangeListener { _, newValue ->
             toggleButton.setState(newValue)
         }
     }
