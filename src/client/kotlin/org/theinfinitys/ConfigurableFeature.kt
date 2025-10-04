@@ -55,6 +55,7 @@ abstract class ConfigurableFeature(
     open val conflicts: List<Class<out ConfigurableFeature>> = emptyList()
 
     open fun tick() {}
+
     open fun start() {}
 
     // --- リスナー登録用API ---
@@ -103,6 +104,7 @@ abstract class ConfigurableFeature(
     }
 
     open fun enabled() {}
+
     open fun disabled() {}
 
     fun enable() {
@@ -124,9 +126,11 @@ abstract class ConfigurableFeature(
     }
 
     fun isEnabled(): Boolean = enabled.value
+
     fun isDisabled(): Boolean = disabled.value
 
     fun getSetting(name: String): InfiniteSetting<*>? = settings.find { it.name == name }
+
     open fun registerCommands(dispatcher: CommandDispatcher<FabricClientCommandSource>) {}
 
     private fun resolve() {

@@ -16,9 +16,10 @@ class Property<T>(
                 field = newValue
 
                 // 【重要修正 1】リスナーを実行する前に、ロックを使って安全にリストのコピーを作成する
-                val listenersToNotify = synchronized(listenerLock) {
-                    listeners.toList() // コピーを作成
-                }
+                val listenersToNotify =
+                    synchronized(listenerLock) {
+                        listeners.toList() // コピーを作成
+                    }
 
                 // コピーに対して反復処理を実行。これにより ConcurrentModificationException を回避
                 listenersToNotify.forEach { it(oldValue, newValue) }
