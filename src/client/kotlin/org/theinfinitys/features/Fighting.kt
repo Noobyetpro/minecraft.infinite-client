@@ -2,6 +2,7 @@ package org.theinfinitys.features
 
 import org.theinfinitys.feature
 import org.theinfinitys.features.fighting.CounterAttack
+import org.theinfinitys.features.fighting.ImpactAttack
 import org.theinfinitys.features.fighting.KillAura
 import org.theinfinitys.features.fighting.Reach
 import org.theinfinitys.features.fighting.NoAttack
@@ -40,4 +41,9 @@ val fighting =
             CounterAttack(),
             "エンティティから攻撃を受けた際に、自動的に反撃します。",
         ),
+        feature(
+            "ImpactAttack",
+            ImpactAttack(),
+            "エンティティに連続攻撃を仕掛けます。"
+        )
     )
