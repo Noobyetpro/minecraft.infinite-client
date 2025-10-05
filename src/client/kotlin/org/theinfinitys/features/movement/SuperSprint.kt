@@ -12,14 +12,7 @@ class SuperSprint : ConfigurableFeature(initialEnabled = false) {
                 "EvenIfHungry",
                 "満腹度が不足している場合でも強制的にスプリントをします。",
                 false,
-            ),
-            InfiniteSetting.FloatSetting(
-                "BoostSprint",
-                "通常よりもさらに速いスピードで移動を行えます。",
-                1.0f,
-                1.0f,
-                1.4f,
-            ),
+            )
         )
 
     override fun tick() {
@@ -28,7 +21,6 @@ class SuperSprint : ConfigurableFeature(initialEnabled = false) {
 
         val onlyWhenForward = (settings[0] as InfiniteSetting.BooleanSetting).value
         val evenIfHungry = (settings[1] as InfiniteSetting.BooleanSetting).value
-        val boostSprint = (settings[2] as InfiniteSetting.FloatSetting).value
 
         if (onlyWhenForward) {
             val lookVec = player.rotationVector // Get player's look vector
@@ -59,17 +51,5 @@ class SuperSprint : ConfigurableFeature(initialEnabled = false) {
             player.isSprinting = true
         }
 
-        // Apply BoostSprint
-        if (player.isSprinting) {
-            // This is a basic speed boost. More advanced implementations might
-            // modify player attributes or apply potion effects.
-            // Directly setting velocity can be problematic and might be reset by the server.
-            // A common approach is to modify the player's movement speed attribute.
-            // For simplicity, we'll directly modify velocity, but be aware of its limitations.
-            val currentVelocity = player.velocity
-            val boostedVelocityX = currentVelocity.x * boostSprint
-            val boostedVelocityZ = currentVelocity.z * boostSprint
-            player.setVelocity(boostedVelocityX, currentVelocity.y, boostedVelocityZ)
-        }
     }
 }

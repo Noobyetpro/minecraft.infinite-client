@@ -1,6 +1,8 @@
 package org.theinfinitys.features.fighting
 
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.network.ClientPlayerEntity
+import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.math.MathHelper
 import org.theinfinitys.ConfigurableFeature
@@ -116,12 +118,9 @@ class CounterAttack : ConfigurableFeature(initialEnabled = false) {
     /**
      * エンティティの方向を向くメソッド。Mixinから移動。
      */
-    private fun faceEntity(
-        player: net.minecraft.client.network.ClientPlayerEntity,
-        target: net.minecraft.entity.Entity
-    ) {
+    private fun faceEntity(player: ClientPlayerEntity, target: Entity) {
         val x = target.x - player.x
-        val y = target.y - (player.y + player.getEyeHeight(player.pose))
+        val y = (target.y + target.getEyeHeight(target.pose)) - (player.y + player.getEyeHeight(player.pose))
         val z = target.z - player.z
 
         val dist = sqrt(x * x + z * z)

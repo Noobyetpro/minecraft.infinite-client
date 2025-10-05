@@ -144,7 +144,7 @@ class ImpactAttack : ConfigurableFeature(initialEnabled = false) {
      */
     private fun faceEntity(player: ClientPlayerEntity, target: Entity) {
         val x = target.x - player.x
-        val y = target.y - (player.y + player.getEyeHeight(player.pose))
+        val y = (target.y + target.getEyeHeight(target.pose)) - (player.y + player.getEyeHeight(player.pose))
         val z = target.z - player.z
 
         val dist = sqrt(x * x + z * z)
