@@ -1,6 +1,7 @@
 package org.theinfinitys.features
 
 import org.theinfinitys.feature
+import org.theinfinitys.features.fighting.CounterAttack
 import org.theinfinitys.features.fighting.KillAura
 import org.theinfinitys.features.fighting.Reach
 import org.theinfinitys.features.fighting.NoAttack
@@ -33,5 +34,10 @@ val fighting =
             "SuperAttack",
             SuperAttack(),
             "自動でクリティカル攻撃を出します。",
+        ),
+        feature(
+            "CounterAttack",
+            CounterAttack(),
+            "エンティティから攻撃を受けた際に、自動的に反撃します。",
         ),
     )
