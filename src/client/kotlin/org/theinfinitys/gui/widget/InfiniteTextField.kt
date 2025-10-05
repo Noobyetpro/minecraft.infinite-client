@@ -1,5 +1,6 @@
 package org.theinfinitys.gui.widget
 
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
@@ -35,6 +36,7 @@ class InfiniteTextField(
         FLOAT,
         BLOCK_ID,
         ENTITY_ID,
+        PLAYER_NAME,
     }
 
     init {
@@ -77,6 +79,8 @@ class InfiniteTextField(
             when (inputType) {
                 InputType.BLOCK_ID -> Registries.BLOCK.ids.map { it.toString() }
                 InputType.ENTITY_ID -> Registries.ENTITY_TYPE.ids.map { it.toString() }
+                InputType.PLAYER_NAME ->
+                    MinecraftClient.getInstance().networkHandler?.playerList?.map { it.profile.name } ?: emptyList()
                 else -> emptyList()
             }.filter { it.startsWith(text, ignoreCase = true) }
                 .sorted()

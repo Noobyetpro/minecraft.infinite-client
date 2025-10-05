@@ -68,4 +68,16 @@ sealed class InfiniteSetting<T>(
         description: String,
         defaultValue: MutableList<String>,
     ) : InfiniteSetting<MutableList<String>>(name, description, defaultValue, defaultValue)
+
+    class EntityListSetting(
+        name: String,
+        description: String,
+        defaultValue: MutableList<String>,
+    ) : InfiniteSetting<MutableList<String>>(name, description, defaultValue, defaultValue)
+
+    class PlayerListSetting(
+        name: String,
+        description: String,
+        defaultValue: MutableList<String>,
+    ) : InfiniteSetting<MutableList<String>>(name, description, defaultValue, defaultValue)
 }

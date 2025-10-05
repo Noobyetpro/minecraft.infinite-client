@@ -13,7 +13,10 @@
     "client.rendering.XRayFluidRendererMixin",
     "client.rendering.XRayRenderLayersMixin",
     "client.FastBreakMixin",
-    "client.ClientPlayerInteractionManagerAccessor"
+    "client.ClientPlayerInteractionManagerAccessor",
+    "client.NoAttackMixin",
+    "client.SuperAttackMixin",
+    "client.KillAuraMixin"
   ],
   "injectors": {
     "defaultRequire": 1

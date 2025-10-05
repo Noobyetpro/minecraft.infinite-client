@@ -84,6 +84,10 @@ object ConfigManager {
                                                 is InfiniteSetting.EntityIDSetting -> JsonPrimitive(setting.value)
                                                 is InfiniteSetting.BlockListSetting ->
                                                     JsonArray(setting.value.map { JsonPrimitive(it) })
+                                                is InfiniteSetting.EntityListSetting ->
+                                                    JsonArray(setting.value.map { JsonPrimitive(it) })
+                                                is InfiniteSetting.PlayerListSetting ->
+                                                    JsonArray(setting.value.map { JsonPrimitive(it) })
                                             }
                                     )
                                 }
@@ -160,6 +164,12 @@ object ConfigManager {
 
                                     // 🚀 **追加されたBlockListSettingの処理**
                                     is InfiniteSetting.BlockListSetting ->
+                                        setting.value =
+                                            json.decodeFromJsonElement<List<String>>(jsonElement).toMutableList()
+                                    is InfiniteSetting.EntityListSetting ->
+                                        setting.value =
+                                            json.decodeFromJsonElement<List<String>>(jsonElement).toMutableList()
+                                    is InfiniteSetting.PlayerListSetting ->
                                         setting.value =
                                             json.decodeFromJsonElement<List<String>>(jsonElement).toMutableList()
 

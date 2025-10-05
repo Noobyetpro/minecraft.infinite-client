@@ -3,6 +3,9 @@ package org.theinfinitys.features
 import org.theinfinitys.feature
 import org.theinfinitys.features.fighting.KillAura
 import org.theinfinitys.features.fighting.Reach
+import org.theinfinitys.features.fighting.NoAttack
+import org.theinfinitys.features.fighting.PlayerManager
+import org.theinfinitys.features.fighting.SuperAttack
 
 val fighting =
     listOf(
@@ -15,5 +18,20 @@ val fighting =
             "Reach",
             Reach(),
             "プレイヤーの到達距離を拡張し、より遠くのブロックやエンティティを操作できるようにします。",
+        ),
+        feature(
+            "NoAttack",
+            NoAttack(),
+            "村人やペットなどの特定のエンティティへの攻撃を防止します。",
+        ),
+        feature(
+            "PlayerManager",
+            PlayerManager(),
+            "フレンドと敵のプレイヤーを管理します。",
+        ),
+        feature(
+            "SuperAttack",
+            SuperAttack(),
+            "自動でクリティカル攻撃を出します。",
         ),
     )

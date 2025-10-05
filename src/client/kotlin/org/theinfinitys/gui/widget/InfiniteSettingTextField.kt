@@ -50,6 +50,8 @@ class InfiniteSettingTextField(
                 is InfiniteSetting.EnumSetting<*> -> {}
                 is InfiniteSetting.StringListSetting -> {}
                 is InfiniteSetting.BlockListSetting -> {}
+                is InfiniteSetting.EntityListSetting -> {}
+                is InfiniteSetting.PlayerListSetting -> {}
             }
         }
     }

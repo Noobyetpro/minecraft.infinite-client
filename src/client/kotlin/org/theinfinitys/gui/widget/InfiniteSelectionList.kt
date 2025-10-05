@@ -15,20 +15,7 @@ class InfiniteSelectionList<E : Enum<E>>(
     private val setting: InfiniteSetting.EnumSetting<E>,
 ) : ClickableWidget(x, y, width, height, Text.literal(setting.name)) {
     private val textRenderer = MinecraftClient.getInstance().textRenderer
-    private val cycleButton: InfiniteButton
-
-    init {
-        cycleButton =
-            InfiniteButton(
-                x + 5 + textRenderer.getWidth(setting.name) + 5, // Position after label
-                y,
-                width - (5 + textRenderer.getWidth(setting.name) + 5), // Remaining width
-                height,
-                Text.literal(setting.value.name),
-            ) {
-                cycleOption()
-            }
-    }
+    private lateinit var cycleButton: InfiniteButton
 
     private fun cycleOption() {
         val currentIndex = setting.options.indexOf(setting.value)
@@ -43,6 +30,20 @@ class InfiniteSelectionList<E : Enum<E>>(
         mouseY: Int,
         delta: Float,
     ) {
+        if (!::cycleButton.isInitialized) {
+            // ここで初期化を実行する。
+            val labelAndPaddingWidth = 5 + textRenderer.getWidth(setting.name) + 5
+            cycleButton =
+                InfiniteButton(
+                    x + labelAndPaddingWidth, // Position after label
+                    y,
+                    width - labelAndPaddingWidth, // Remaining width
+                    height,
+                    Text.literal(setting.value.name),
+                ) {
+                    cycleOption()
+                }
+        }
         context.drawTextWithShadow(
             textRenderer,
             Text.literal(setting.name),

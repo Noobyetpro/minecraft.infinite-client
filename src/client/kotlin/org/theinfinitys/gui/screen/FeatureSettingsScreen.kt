@@ -8,6 +8,8 @@ import org.theinfinitys.ConfigurableFeature
 import org.theinfinitys.Feature
 import org.theinfinitys.gui.widget.InfiniteBlockListField
 import org.theinfinitys.gui.widget.InfiniteButton
+import org.theinfinitys.gui.widget.InfiniteEntityListField
+import org.theinfinitys.gui.widget.InfinitePlayerListField
 import org.theinfinitys.gui.widget.InfiniteScrollableContainer
 import org.theinfinitys.gui.widget.InfiniteSelectionList
 import org.theinfinitys.gui.widget.InfiniteSettingTextField
@@ -74,6 +76,14 @@ class FeatureSettingsScreen(
                 }
                 is InfiniteSetting.BlockListSetting -> {
                     settingWidgets.add(InfiniteBlockListField(20, currentY, widgetWidth, blockListFieldHeight, setting))
+                    currentY += blockListFieldHeight + padding // Use blockListFieldHeight here
+                }
+                is InfiniteSetting.EntityListSetting -> {
+                    settingWidgets.add(InfiniteEntityListField(20, currentY, widgetWidth, blockListFieldHeight, setting))
+                    currentY += blockListFieldHeight + padding // Use blockListFieldHeight here
+                }
+                is InfiniteSetting.PlayerListSetting -> {
+                    settingWidgets.add(InfinitePlayerListField(20, currentY, widgetWidth, blockListFieldHeight, setting))
                     currentY += blockListFieldHeight + padding // Use blockListFieldHeight here
                 }
             }
