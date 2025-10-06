@@ -28,10 +28,14 @@ class WaterHover : ConfigurableFeature(initialEnabled = false) {
         val method = (getSetting("Method") as? InfiniteSetting.EnumSetting)?.value as? WaterHoverMethod ?: return
         when (method) {
             WaterHoverMethod.Jump -> {
-                val waterGravity = -0.02 * 0.8
+                val waterAttenuationFactor = 0.8
+                val waterGravityVelocity = -0.02 * waterAttenuationFactor
                 // プレイヤーが水中にいて、泳いでいない、かつスニークキーを押していない場合に処理を行う
                 val shouldHover =
-                    player.isTouchingWater && !player.isSwimming && !client.options.sneakKey.isPressed && player.velocity.y < waterGravity
+                    player.isTouchingWater &&
+                        !player.isSwimming &&
+                        !client.options.sneakKey.isPressed &&
+                        player.velocity.y < waterGravityVelocity
 
                 // 浮遊状態であれば、ジャンプキーの状態を「押されている」に設定する
                 // これにより、ゲームの水中のジャンプロジック（+0.04のmotY追加）が呼び出され、浮力を得る
