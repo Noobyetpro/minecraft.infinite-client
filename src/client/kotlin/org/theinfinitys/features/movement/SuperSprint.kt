@@ -12,7 +12,7 @@ class SuperSprint : ConfigurableFeature(initialEnabled = false) {
                 "EvenIfHungry",
                 "満腹度が不足している場合でも強制的にスプリントをします。",
                 false,
-            )
+            ),
         )
 
     override fun tick() {
@@ -50,6 +50,5 @@ class SuperSprint : ConfigurableFeature(initialEnabled = false) {
         if ((player.velocity.x != 0.0 || player.velocity.z != 0.0) && !player.isSprinting) {
             player.isSprinting = true
         }
-
     }
 }

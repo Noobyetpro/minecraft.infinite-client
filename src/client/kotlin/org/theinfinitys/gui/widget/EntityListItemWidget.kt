@@ -7,11 +7,10 @@ import net.minecraft.client.gui.screen.narration.NarrationPart
 import net.minecraft.client.gui.widget.ClickableWidget
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
+import net.minecraft.item.SpawnEggItem
 import net.minecraft.registry.Registries
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-
-import net.minecraft.item.SpawnEggItem
 
 class EntityListItemWidget(
     x: Int,

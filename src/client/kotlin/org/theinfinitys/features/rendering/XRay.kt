@@ -15,7 +15,6 @@ enum class XRayMode {
 }
 
 class XRay : ConfigurableFeature(initialEnabled = false) {
-    // ... (設定の定義は変更なし)
     override val settings: List<InfiniteSetting<*>> =
         listOf(
             InfiniteSetting.EnumSetting(

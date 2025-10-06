@@ -11,26 +11,33 @@ import org.theinfinitys.settings.InfiniteSetting.BooleanSetting
 
 // FeatherWalk Featureの定義
 class FeatherWalk : ConfigurableFeature(initialEnabled = false) {
-
     // フィーチャーのロジックで利用する設定
-    private val blockList: BlockListSetting = BlockListSetting(
-        name = "Allowed Blocks",
-        description = "ジャンプ・ダッシュを抑制するブロックIDのリストです。",
-        defaultValue = mutableListOf("minecraft:farmland", "minecraft:gravel") // 例として砂と砂利を設定
-    )
+    private val blockList: BlockListSetting =
+        BlockListSetting(
+            name = "Allowed Blocks",
+            description = "ジャンプ・ダッシュを抑制するブロックIDのリストです。",
+            defaultValue = mutableListOf("minecraft:farmland", "minecraft:gravel"), // 例として砂と砂利を設定
+        )
 
-    private val disableJump: BooleanSetting = BooleanSetting(
-        name = "Disable Jump", description = "設定されたブロック上でのジャンプを無効にします。", defaultValue = true
-    )
+    private val disableJump: BooleanSetting =
+        BooleanSetting(
+            name = "Disable Jump",
+            description = "設定されたブロック上でのジャンプを無効にします。",
+            defaultValue = true,
+        )
 
-    private val disableSprint: BooleanSetting = BooleanSetting(
-        name = "Disable Sprint",
-        description = "設定されたブロック上でのダッシュ（スプリント）を無効にします。",
-        defaultValue = true
-    )
-    override val settings: List<InfiniteSetting<*>> = listOf(
-        blockList, disableJump, disableSprint
-    )
+    private val disableSprint: BooleanSetting =
+        BooleanSetting(
+            name = "Disable Sprint",
+            description = "設定されたブロック上でのダッシュ（スプリント）を無効にします。",
+            defaultValue = true,
+        )
+    override val settings: List<InfiniteSetting<*>> =
+        listOf(
+            blockList,
+            disableJump,
+            disableSprint,
+        )
 
     // --- 仮定されるゲームクライアントへのアクセスポイント ---
     // 実際の環境に合わせて適宜変更してください。
@@ -42,9 +49,21 @@ class FeatherWalk : ConfigurableFeature(initialEnabled = false) {
 
         // 1. プレイヤーの現在のブロック座標を取得
         // プレイヤーの足元（Y-1）ではなく、プレイヤーの中心ブロックを取得する
-        val playerX = mc.player?.pos?.x?.toInt() ?: return
-        val playerY = mc.player?.pos?.y?.toInt() ?: return
-        val playerZ = mc.player?.pos?.z?.toInt() ?: return
+        val playerX =
+            mc.player
+                ?.pos
+                ?.x
+                ?.toInt() ?: return
+        val playerY =
+            mc.player
+                ?.pos
+                ?.y
+                ?.toInt() ?: return
+        val playerZ =
+            mc.player
+                ?.pos
+                ?.z
+                ?.toInt() ?: return
 
         // 2. プレイヤーの中心ブロックとその周囲1ブロック（3x3x3 = 27ブロック）を確認
         // X, Y, Z軸で -1 から +1 までの範囲を反復処理
@@ -59,7 +78,8 @@ class FeatherWalk : ConfigurableFeature(initialEnabled = false) {
                     // 現在のブロックのID/名前を取得 (環境依存のメソッド)
                     // 例: mc.world.getBlockState(x, y, z).id.toString()
                     val blockName =
-                        Registries.BLOCK.getId(mc.world?.getBlockState(BlockPos(Vec3i(checkX, checkY, checkZ)))?.block)
+                        Registries.BLOCK
+                            .getId(mc.world?.getBlockState(BlockPos(Vec3i(checkX, checkY, checkZ)))?.block)
                             .toString()
 
                     // 設定されたブロックリストに含まれているかチェック
@@ -82,9 +102,7 @@ class FeatherWalk : ConfigurableFeature(initialEnabled = false) {
             }
             if (disableSprint.value) {
                 mc.player?.isSprinting = false // Stop sprinting if hunger is too low
-
             }
         }
     }
-
 }

@@ -4,9 +4,9 @@ import org.theinfinitys.feature
 import org.theinfinitys.features.fighting.CounterAttack
 import org.theinfinitys.features.fighting.ImpactAttack
 import org.theinfinitys.features.fighting.KillAura
-import org.theinfinitys.features.fighting.Reach
 import org.theinfinitys.features.fighting.NoAttack
 import org.theinfinitys.features.fighting.PlayerManager
+import org.theinfinitys.features.fighting.Reach
 import org.theinfinitys.features.fighting.SuperAttack
 
 val fighting =
@@ -44,6 +44,6 @@ val fighting =
         feature(
             "ImpactAttack",
             ImpactAttack(),
-            "エンティティに連続攻撃を仕掛けます。"
-        )
+            "エンティティに連続攻撃を仕掛けます。",
+        ),
     )

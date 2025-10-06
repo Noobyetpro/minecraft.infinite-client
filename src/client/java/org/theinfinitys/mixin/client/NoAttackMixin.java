@@ -16,34 +16,36 @@ import org.theinfinitys.settings.InfiniteSetting;
 @Mixin(ClientPlayerInteractionManager.class)
 public class NoAttackMixin {
 
-    @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)
-    private void onAttackEntity(PlayerEntity player, Entity target, CallbackInfo ci) {
-        NoAttack noAttackFeature = InfiniteClient.INSTANCE.getFeature(NoAttack.class);
-        PlayerManager playerManagerFeature = InfiniteClient.INSTANCE.getFeature(PlayerManager.class);
+  @Inject(method = "attackEntity", at = @At("HEAD"), cancellable = true)
+  private void onAttackEntity(PlayerEntity player, Entity target, CallbackInfo ci) {
+    NoAttack noAttackFeature = InfiniteClient.INSTANCE.getFeature(NoAttack.class);
+    PlayerManager playerManagerFeature = InfiniteClient.INSTANCE.getFeature(PlayerManager.class);
 
-        if (noAttackFeature != null && noAttackFeature.isEnabled()) {
-            // Check for protected entities (villagers, pets, etc.)
-            InfiniteSetting.EntityListSetting protectedEntitiesSetting = (InfiniteSetting.EntityListSetting) noAttackFeature.getSetting("ProtectedEntities");
-            if (protectedEntitiesSetting != null) {
-                String targetEntityId = Registries.ENTITY_TYPE.getId(target.getType()).toString();
-                if (protectedEntitiesSetting.getValue().contains(targetEntityId)) {
-                    ci.cancel(); // Cancel the attack
-                    return;
-                }
-            }
+    if (noAttackFeature != null && noAttackFeature.isEnabled()) {
+      // Check for protected entities (villagers, pets, etc.)
+      InfiniteSetting.EntityListSetting protectedEntitiesSetting =
+          (InfiniteSetting.EntityListSetting) noAttackFeature.getSetting("ProtectedEntities");
+      if (protectedEntitiesSetting != null) {
+        String targetEntityId = Registries.ENTITY_TYPE.getId(target.getType()).toString();
+        if (protectedEntitiesSetting.getValue().contains(targetEntityId)) {
+          ci.cancel(); // Cancel the attack
+          return;
         }
-
-        if (playerManagerFeature != null && playerManagerFeature.isEnabled()) {
-            // Check for friendly players
-            if (target instanceof PlayerEntity) {
-                InfiniteSetting.PlayerListSetting friendsSetting = (InfiniteSetting.PlayerListSetting) playerManagerFeature.getSetting("Friends");
-                if (friendsSetting != null) {
-                    String targetPlayerName = target.getName().getString();
-                    if (friendsSetting.getValue().contains(targetPlayerName)) {
-                        ci.cancel(); // Cancel the attack
-                    }
-                }
-            }
-        }
+      }
     }
+
+    if (playerManagerFeature != null && playerManagerFeature.isEnabled()) {
+      // Check for friendly players
+      if (target instanceof PlayerEntity) {
+        InfiniteSetting.PlayerListSetting friendsSetting =
+            (InfiniteSetting.PlayerListSetting) playerManagerFeature.getSetting("Friends");
+        if (friendsSetting != null) {
+          String targetPlayerName = target.getName().getString();
+          if (friendsSetting.getValue().contains(targetPlayerName)) {
+            ci.cancel(); // Cancel the attack
+          }
+        }
+      }
+    }
+  }
 }

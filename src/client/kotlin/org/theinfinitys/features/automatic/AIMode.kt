@@ -13,7 +13,6 @@ import org.theinfinitys.settings.InfiniteSetting
  * クライアントプレイヤーのAI制御を管理するフィーチャー。
  */
 class AIMode : ConfigurableFeature(initialEnabled = false) {
-
     // PlayerAIのインスタンスを保持し、外部からアクセスできるように公開
     val playerAI: PlayerAI = PlayerAI(MinecraftClient.getInstance())
 
@@ -24,19 +23,20 @@ class AIMode : ConfigurableFeature(initialEnabled = false) {
     private var lastKnownHealth: Float = -1.0f
 
     // --- 設定 ---
-    override val settings: List<InfiniteSetting<*>> = listOf(
-        InfiniteSetting.BooleanSetting(
-            "AllowPlayerInput",
-            "AIモード中でもプレイヤーの入力を許可します。",
-            false,
-        ),
-        // 新しい設定: ダメージを受けた際にAIを強制中断する
-        InfiniteSetting.BooleanSetting(
-            "CancelOnDamaged",
-            "プレイヤーがダメージを受けた際にAIを強制中断します。",
-            false,
+    override val settings: List<InfiniteSetting<*>> =
+        listOf(
+            InfiniteSetting.BooleanSetting(
+                "AllowPlayerInput",
+                "AIモード中でもプレイヤーの入力を許可します。",
+                false,
+            ),
+            // 新しい設定: ダメージを受けた際にAIを強制中断する
+            InfiniteSetting.BooleanSetting(
+                "CancelOnDamaged",
+                "プレイヤーがダメージを受けた際にAIを強制中断します。",
+                false,
+            ),
         )
-    )
 
     // --- 他のフィーチャーからPlayerAIの機能を利用するための公開インターフェース ---
 
@@ -60,9 +60,15 @@ class AIMode : ConfigurableFeature(initialEnabled = false) {
 
     // --- ライフサイクルメソッドのオーバーライド ---
     private var isAutoJump = false
+
     override fun enabled() {
-        isAutoJump = MinecraftClient.getInstance().options.autoJump.value
-        MinecraftClient.getInstance().options.autoJump.value = true
+        isAutoJump =
+            MinecraftClient
+                .getInstance()
+                .options.autoJump.value
+        MinecraftClient
+            .getInstance()
+            .options.autoJump.value = true
 
         // 有効化時に初期ヘルスを記録
         lastKnownHealth = MinecraftClient.getInstance().player?.health ?: -1.0f
@@ -70,7 +76,9 @@ class AIMode : ConfigurableFeature(initialEnabled = false) {
 
     override fun disabled() {
         playerAI.stopTask()
-        MinecraftClient.getInstance().options.autoJump.value = isAutoJump
+        MinecraftClient
+            .getInstance()
+            .options.autoJump.value = isAutoJump
         lastKnownHealth = -1.0f // 無効化時にリセット
     }
 
@@ -112,13 +120,9 @@ class AIMode : ConfigurableFeature(initialEnabled = false) {
         }
     }
 
-    fun currentTaskIsNull(): Boolean {
-        return playerAI.currentTaskIsNull()
-    }
+    fun currentTaskIsNull(): Boolean = playerAI.currentTaskIsNull()
 
     companion object {
-        fun getInstance(): AIMode? {
-            return InfiniteClient.getFeature(AIMode::class.java)
-        }
+        fun getInstance(): AIMode? = InfiniteClient.getFeature(AIMode::class.java)
     }
 }

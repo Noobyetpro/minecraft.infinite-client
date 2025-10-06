@@ -10,17 +10,21 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import org.theinfinitys.ConfigurableFeature
-import org.theinfinitys.InfiniteClient
 import org.theinfinitys.settings.InfiniteSetting
 
 /**
  * 自動伐採機能。
  */
 class WoodCutter : ConfigurableFeature(initialEnabled = false) {
-
     // --- 状態管理 ---
     private enum class State {
-        IDLE, SEARCHING, MOVING_TO_TREE, BREAKING_LOGS, BREAKING_INTERFERING_BLOCK, COLLECTING_ITEMS, COMPLETED_TREE
+        IDLE,
+        SEARCHING,
+        MOVING_TO_TREE,
+        BREAKING_LOGS,
+        BREAKING_INTERFERING_BLOCK,
+        COLLECTING_ITEMS,
+        COMPLETED_TREE,
     }
 
     private var currentState: State = State.IDLE
@@ -30,25 +34,31 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     private var itemCollectionRange: Float = 10.0f
 
     // --- 設定 ---
-    override val settings: List<InfiniteSetting<*>> = listOf(
-        InfiniteSetting.FloatSetting(
-            "Range", "探索範囲 (ブロック)。", 32.0f, 5.0f, 64.0f
-        ), InfiniteSetting.BlockListSetting(
-            "LogBlocks",
-            "伐採対象の丸太ブロックIDリスト。",
-            mutableListOf("minecraft:oak_log", "minecraft:spruce_log", "minecraft:birch_log")
-        ),
-        InfiniteSetting.BlockListSetting(
-            "LeavesBlocks",
-            "破壊対象の葉ブロックIDリスト。",
-            mutableListOf("minecraft:oak_leaves", "minecraft:spruce_leaves", "minecraft:birch_leaves")
-        ),
-        InfiniteSetting.BooleanSetting(
-            "CollectItems",
-            "伐採後にドロップアイテムを回収します。",
-            true
+    override val settings: List<InfiniteSetting<*>> =
+        listOf(
+            InfiniteSetting.FloatSetting(
+                "Range",
+                "探索範囲 (ブロック)。",
+                32.0f,
+                5.0f,
+                64.0f,
+            ),
+            InfiniteSetting.BlockListSetting(
+                "LogBlocks",
+                "伐採対象の丸太ブロックIDリスト。",
+                mutableListOf("minecraft:oak_log", "minecraft:spruce_log", "minecraft:birch_log"),
+            ),
+            InfiniteSetting.BlockListSetting(
+                "LeavesBlocks",
+                "破壊対象の葉ブロックIDリスト。",
+                mutableListOf("minecraft:oak_leaves", "minecraft:spruce_leaves", "minecraft:birch_leaves"),
+            ),
+            InfiniteSetting.BooleanSetting(
+                "CollectItems",
+                "伐採後にドロップアイテムを回収します。",
+                true,
+            ),
         )
-    )
 
     override val depends: List<Class<out ConfigurableFeature>> = listOf(AIMode::class.java)
     override val conflicts: List<Class<out ConfigurableFeature>> = listOf(VeinMiner::class.java)
@@ -84,10 +94,11 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
         val range = rangeFloat.toInt()
 
         // 探索範囲はプレイヤーの上下に広げる
-        val searchArea = BlockPos.iterate(
-            playerPos.add(-range, -range, -range),
-            playerPos.add(range, range, range)
-        )
+        val searchArea =
+            BlockPos.iterate(
+                playerPos.add(-range, -range, -range),
+                playerPos.add(range, range, range),
+            )
 
         var closestTreeRoot: BlockPos? = null
         var minDistanceSq = Double.MAX_VALUE
@@ -96,7 +107,6 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
             val block = world.getBlockState(pos).block
 
             if (isLogBlock(block)) {
-
                 // --- 根元を見つけるロジック ---
                 var rootPosCandidate = pos.toImmutable()
                 var currentPos = pos.toImmutable()
@@ -167,14 +177,15 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
         var closestItem: ItemEntity? = null
         var minDistanceSq = itemCollectionRange * itemCollectionRange
 
-        val box = Box(
-            playerPos.x - itemCollectionRange,
-            playerPos.y - itemCollectionRange,
-            playerPos.z - itemCollectionRange,
-            playerPos.x + itemCollectionRange,
-            playerPos.y + itemCollectionRange,
-            playerPos.z + itemCollectionRange
-        )
+        val box =
+            Box(
+                playerPos.x - itemCollectionRange,
+                playerPos.y - itemCollectionRange,
+                playerPos.z - itemCollectionRange,
+                playerPos.x + itemCollectionRange,
+                playerPos.y + itemCollectionRange,
+                playerPos.z + itemCollectionRange,
+            )
 
         val entities = world.getOtherEntities(null, box)
 
@@ -201,7 +212,10 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     /**
      * プレイヤーの目の位置からターゲットログまでの直線上に邪魔なブロックがないかチェックします。
      */
-    private fun findInterferingBlockBetweenPlayerAndTarget(startPos: Vec3d, targetPos: BlockPos): BlockPos? {
+    private fun findInterferingBlockBetweenPlayerAndTarget(
+        startPos: Vec3d,
+        targetPos: BlockPos,
+    ): BlockPos? {
         val client = MinecraftClient.getInstance()
         val world = client.world ?: return null
 
@@ -263,7 +277,11 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
             }
 
             State.MOVING_TO_TREE -> {
-                val rootPos = targetTreeRoot ?: run { currentState = State.IDLE; return }
+                val rootPos =
+                    targetTreeRoot ?: run {
+                        currentState = State.IDLE
+                        return
+                    }
 
                 // 移動タスク完了チェックをPlayerAIに依存
                 if (aiMode.currentTaskIsNull()) {
@@ -276,11 +294,12 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
             }
 
             State.BREAKING_LOGS -> {
-                val currentTarget = currentLogTarget ?: run {
-                    // currentLogTargetがnullなのにこのステートにいるのはおかしい
-                    currentState = State.IDLE;
-                    return
-                }
+                val currentTarget =
+                    currentLogTarget ?: run {
+                        // currentLogTargetがnullなのにこのステートにいるのはおかしい
+                        currentState = State.IDLE
+                        return
+                    }
 
                 // ターゲットログの破壊が完了したかチェック
                 if (world.getBlockState(currentTarget).isAir) {
@@ -290,7 +309,6 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
                         currentInterferingBlock = interferingBlock
                         aiMode.startBreakBlock(interferingBlock)
                         currentState = State.BREAKING_INTERFERING_BLOCK
-
                     } else if (nextLog != null) {
                         currentLogTarget = nextLog
                         aiMode.startBreakBlock(nextLog)
@@ -308,12 +326,16 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
             }
 
             State.BREAKING_INTERFERING_BLOCK -> {
-                val targetBlock = currentInterferingBlock ?: run { currentState = State.IDLE; return }
+                val targetBlock =
+                    currentInterferingBlock ?: run {
+                        currentState = State.IDLE
+                        return
+                    }
 
                 if (world.getBlockState(targetBlock).isAir) {
                     client.player?.sendMessage(
                         Text.of("§a[WC] Interfering block broken. Resuming log break."),
-                        true
+                        true,
                     )
                     currentInterferingBlock = null
 
@@ -336,7 +358,8 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
                     } else {
                         // 収集範囲内にアイテムがもうない場合、収集完了
                         client.player?.sendMessage(
-                            Text.of("§a[WC] Item collection complete. Seeking next tree."), false
+                            Text.of("§a[WC] Item collection complete. Seeking next tree."),
+                            false,
                         )
                         targetTreeRoot = null
                         currentState = State.COMPLETED_TREE // 収集完了で次のツリーへ
@@ -350,7 +373,6 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
 // ... (findNextLogAndInterferingBlockは変更なし) ...
 // ... (findClosestItemは変更なし) ...
 // ... (findInterferingBlockBetweenPlayerAndTargetは、MoveToPosTaskで処理するため、削除しても良いが、ここでは一時的に残す) ...
-
 
     // --- ライフサイクル ---
 
@@ -388,5 +410,4 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
         currentInterferingBlock = null
         MinecraftClient.getInstance().player?.sendMessage(Text.of("§cWoodCutter disabled. Task stopped."), false)
     }
-
 }

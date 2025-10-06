@@ -39,7 +39,6 @@ class CounterAttack : ConfigurableFeature(initialEnabled = false) {
         // --- 1. ダメージ検出 ---
         // プレイヤーのhurtTimeが設定され、かつ前回のtick時よりも増えた場合（つまり、今ダメージを受けた）
         if (player.hurtTime > lastHurtTime && internalCooldown <= 0) {
-
             // --- 2. 攻撃者の推測 ---
             val target = findBestAttacker(player)
 
@@ -85,15 +84,16 @@ class CounterAttack : ConfigurableFeature(initialEnabled = false) {
         val range = ((settings.find { it.name == "Range" } as? InfiniteSetting.FloatSetting)?.value ?: 4.2f).toDouble()
 
         // プレイヤーに近いLivingEntityをリストアップ
-        val potentialTargets = world.getOtherEntities(player, player.boundingBox.expand(range)) { entity ->
-            entity is LivingEntity && entity != player && entity.isAlive
-        }.filterIsInstance<LivingEntity>()
+        val potentialTargets =
+            world
+                .getOtherEntities(player, player.boundingBox.expand(range)) { entity ->
+                    entity is LivingEntity && entity != player && entity.isAlive
+                }.filterIsInstance<LivingEntity>()
 
         // ここで、ターゲットの優先順位付けロジックを入れる（例：最も近いエンティティ、または直前に攻撃アニメーションを見せたエンティティなど）
         // 単純化のため、ここでは「最も近く、生きているLivingEntity」を返す
         return potentialTargets.minByOrNull { it.distanceTo(player) }
     }
-
 
     /**
      * 実際に反撃を実行するメソッド。
@@ -118,7 +118,10 @@ class CounterAttack : ConfigurableFeature(initialEnabled = false) {
     /**
      * エンティティの方向を向くメソッド。Mixinから移動。
      */
-    private fun faceEntity(player: ClientPlayerEntity, target: Entity) {
+    private fun faceEntity(
+        player: ClientPlayerEntity,
+        target: Entity,
+    ) {
         val x = target.x - player.x
         val y = (target.y + target.getEyeHeight(target.pose)) - (player.y + player.getEyeHeight(player.pose))
         val z = target.z - player.z

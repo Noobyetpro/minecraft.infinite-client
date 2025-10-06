@@ -11,7 +11,6 @@ import org.theinfinitys.settings.InfiniteSetting
 import kotlin.math.sqrt
 
 class ImpactAttack : ConfigurableFeature(initialEnabled = false) {
-
     // 最初に攻撃されたターゲット
     private var targetToFollow: Entity? = null
 
@@ -142,7 +141,10 @@ class ImpactAttack : ConfigurableFeature(initialEnabled = false) {
      * エンティティの方向を向くメソッド。
      * このメソッドは ConfigurableFeature から移動したものとします。
      */
-    private fun faceEntity(player: ClientPlayerEntity, target: Entity) {
+    private fun faceEntity(
+        player: ClientPlayerEntity,
+        target: Entity,
+    ) {
         val x = target.x - player.x
         val y = (target.y + target.getEyeHeight(target.pose)) - (player.y + player.getEyeHeight(player.pose))
         val z = target.z - player.z

@@ -4,11 +4,10 @@ import org.theinfinitys.ConfigurableFeature
 import org.theinfinitys.settings.InfiniteSetting
 
 class SuperAttack : ConfigurableFeature(initialEnabled = false) {
-
     enum class AttackMethod {
         PACKET,
         MINI_JUMP,
-        FULL_JUMP
+        FULL_JUMP,
     }
 
     override val settings: List<InfiniteSetting<*>> =
@@ -17,7 +16,7 @@ class SuperAttack : ConfigurableFeature(initialEnabled = false) {
                 "Method",
                 "クリティカル攻撃の方法を選択します。",
                 AttackMethod.MINI_JUMP,
-                AttackMethod.entries.toList()
-            )
+                AttackMethod.entries.toList(),
+            ),
         )
 }

@@ -80,7 +80,11 @@ class InfiniteTextField(
                 InputType.BLOCK_ID -> Registries.BLOCK.ids.map { it.toString() }
                 InputType.ENTITY_ID -> Registries.ENTITY_TYPE.ids.map { it.toString() }
                 InputType.PLAYER_NAME ->
-                    MinecraftClient.getInstance().networkHandler?.playerList?.map { it.profile.name } ?: emptyList()
+                    MinecraftClient
+                        .getInstance()
+                        .networkHandler
+                        ?.playerList
+                        ?.map { it.profile.name } ?: emptyList()
                 else -> emptyList()
             }.filter { it.startsWith(text, ignoreCase = true) }
                 .sorted()
