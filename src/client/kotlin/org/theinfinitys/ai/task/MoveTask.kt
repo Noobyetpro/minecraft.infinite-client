@@ -5,9 +5,12 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import org.theinfinitys.ai.PlayerController
 import org.theinfinitys.ai.Task
-import org.theinfinitys.ai.TaskTickResult.*
 import org.theinfinitys.ai.TaskTickResult
-import org.theinfinitys.ai.utils.*
+import org.theinfinitys.ai.TaskTickResult.Failure
+import org.theinfinitys.ai.TaskTickResult.Interrupt
+import org.theinfinitys.ai.TaskTickResult.Progress
+import org.theinfinitys.ai.TaskTickResult.Success
+import org.theinfinitys.ai.utils.minus
 
 /**
  * 指定された目標位置への移動を処理するタスク。
@@ -20,9 +23,8 @@ class MoveTask(
     private val targetPos: Vec3d,
     private val requiredDistance: Double = 0.5,
     private val breakableBlock: (String) -> Boolean = { false },
-    private val blockCheckDistance: Double = 1.0 // チェックするブロックの距離
+    private val blockCheckDistance: Double = 1.0,
 ) : Task {
-
     override fun onTick(controller: PlayerController): TaskTickResult {
         // プレイヤーが死んでいる場合はタスクを中断
         if (controller.getPlayer().isDead) {
@@ -46,10 +48,11 @@ class MoveTask(
 
         // チェックする位置（ブロックの整数座標）
         // 頭の高さと足元の2箇所をチェック
-        val blocksToCheck = listOf(
-            BlockPos.ofFloored(checkPos.x, playerPos.y, checkPos.z),       // 進行方向の足元
-            BlockPos.ofFloored(checkPos.x, playerPos.y + 1.0, checkPos.z)  // 進行方向の頭の高さ
-        )
+        val blocksToCheck =
+            listOf(
+                BlockPos.ofFloored(checkPos.x, playerPos.y, checkPos.z), // 進行方向の足元
+                BlockPos.ofFloored(checkPos.x, playerPos.y + 1.0, checkPos.z), // 進行方向の頭の高さ
+            )
 
         // PlayerControllerに getWorld() メソッドが存在すると仮定
         val world = controller.client.world ?: return Failure
@@ -77,7 +80,6 @@ class MoveTask(
             if (blockState.getCollisionShape(world, blockPos).isEmpty) {
                 continue // 衝突箱がない、つまり通り抜けられるブロック
             }
-
 
             // 破壊可能かチェック
             if (breakableBlock(blockId)) {

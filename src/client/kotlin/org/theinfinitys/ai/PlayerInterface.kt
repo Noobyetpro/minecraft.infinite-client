@@ -10,12 +10,11 @@ import java.util.ArrayDeque // ArrayDequeを使用
  * インターフェースクラス。
  * タスクキューを管理し、実際の操作はPlayerControllerに委譲します。
  */
-class PlayerInterface(private val client: MinecraftClient) {
-
+class PlayerInterface(
+    private val client: MinecraftClient,
+) {
     // プレイヤーの操作ロジックをカプセル化
-    fun hasActiveTasks(): Boolean {
-        return tasks.isNotEmpty()
-    }
+    fun hasActiveTasks(): Boolean = tasks.isNotEmpty()
 
     private val controller: PlayerController = PlayerController(client)
     var lastTaskResult: TaskTickResult? = null

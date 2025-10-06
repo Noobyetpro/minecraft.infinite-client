@@ -1,8 +1,8 @@
 package org.theinfinitys.ai
 
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.option.KeyBinding
 import net.minecraft.client.network.ClientPlayerEntity
+import net.minecraft.client.option.KeyBinding
 import net.minecraft.command.argument.EntityAnchorArgumentType
 import net.minecraft.util.math.Vec3d
 import kotlin.math.atan2
@@ -12,7 +12,9 @@ import kotlin.math.atan2
  * プレイヤーエンティティを操作するコントローラークラス。
  * 実際の操作ロジックは全てここに集約されます。
  */
-class PlayerController(val client: MinecraftClient) {
+class PlayerController(
+    val client: MinecraftClient,
+) {
     private val player: ClientPlayerEntity = client.player!!
 
     fun getPlayer(): ClientPlayerEntity = player
@@ -57,13 +59,17 @@ class PlayerController(val client: MinecraftClient) {
      * @param targetPos 視線を向ける目標のワールド座標
      * @param anchor プレイヤーのどの位置から目標を見るか（例: EYES/FEET）
      */
-    fun lookAt(targetPos: Vec3d, anchor: EntityAnchorArgumentType.EntityAnchor) {
+    fun lookAt(
+        targetPos: Vec3d,
+        anchor: EntityAnchorArgumentType.EntityAnchor,
+    ) {
         if (player.isDead) return
 
-        val startPos: Vec3d = when (anchor) {
-            EntityAnchorArgumentType.EntityAnchor.FEET -> player.pos // プレイヤーの足元
-            EntityAnchorArgumentType.EntityAnchor.EYES -> player.getCameraPosVec(1.0f) // プレイヤーの目線
-        }
+        val startPos: Vec3d =
+            when (anchor) {
+                EntityAnchorArgumentType.EntityAnchor.FEET -> player.pos // プレイヤーの足元
+                EntityAnchorArgumentType.EntityAnchor.EYES -> player.getCameraPosVec(1.0f) // プレイヤーの目線
+            }
 
         val dx = targetPos.x - startPos.x
         val dy = targetPos.y - startPos.y
@@ -104,7 +110,10 @@ class PlayerController(val client: MinecraftClient) {
     }
 
     // KeyBindingのセット操作をラップするヘルパーメソッド
-    private fun setKey(key: KeyBinding, pressed: Boolean) {
+    private fun setKey(
+        key: KeyBinding,
+        pressed: Boolean,
+    ) {
         key.let {
             // KeyBinding.setKeyPressedを呼び出し、キーの状態を設定
             KeyBinding.setKeyPressed(it.defaultKey, pressed)

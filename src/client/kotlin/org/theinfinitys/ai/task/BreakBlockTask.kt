@@ -2,7 +2,6 @@ package org.theinfinitys.ai.task
 
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.World // Worldクラスを使用するためにインポート
 import org.theinfinitys.ai.PlayerController
 import org.theinfinitys.ai.Task
 import org.theinfinitys.ai.TaskTickResult
@@ -12,9 +11,8 @@ import org.theinfinitys.ai.TaskTickResult
  * @param targetPos 破壊するブロックの座標
  */
 class BreakBlockTask(
-    private val targetPos: BlockPos
+    private val targetPos: BlockPos,
 ) : Task {
-
     // 破壊の試行回数をカウントしたり、タイムアウトを設定することもできますが、
     // ここではシンプルに、成功するまで試行を繰り返すものとします。
 
@@ -27,8 +25,9 @@ class BreakBlockTask(
 
         // --- 修正箇所: ブロックの状態の取得 ---
         // PlayerControllerからワールド（クライアントワールド）を取得
-        val world: ClientWorld = controller.getPlayer().clientWorld ?: // ワールド情報が取得できない場合は失敗として処理
-        return TaskTickResult.Failure // 実際のメソッド名は環境に依存する場合があります
+        val world: ClientWorld =
+            controller.getPlayer().clientWorld ?: // ワールド情報が取得できない場合は失敗として処理
+                return TaskTickResult.Failure // 実際のメソッド名は環境に依存する場合があります
 
         // 指定された座標のBlockStateを取得
         val blockState = world.getBlockState(targetPos)

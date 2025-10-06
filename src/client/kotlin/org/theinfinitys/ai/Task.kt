@@ -26,5 +26,7 @@ sealed class TaskTickResult {
      * 実行中のタスクが自発的に中断され、指定された新しいタスクを割り込みとして挿入する状態。
      * @param interruptTask キューの先頭に挿入されるタスク
      */
-    data class Interrupt(val interruptTask: Task) : TaskTickResult()
+    data class Interrupt(
+        val interruptTask: Task,
+    ) : TaskTickResult()
 }

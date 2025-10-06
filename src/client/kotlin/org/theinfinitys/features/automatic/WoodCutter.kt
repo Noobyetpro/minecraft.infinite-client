@@ -6,9 +6,9 @@ import net.minecraft.util.math.BlockPos
 import org.theinfinitys.ConfigurableFeature
 import org.theinfinitys.InfiniteClient
 import org.theinfinitys.ai.PlayerInterface
+import org.theinfinitys.ai.TaskTickResult
 import org.theinfinitys.ai.task.BreakBlockTask
 import org.theinfinitys.ai.task.MoveTask
-import org.theinfinitys.ai.TaskTickResult
 import org.theinfinitys.settings.InfiniteSetting
 
 /**
@@ -24,28 +24,28 @@ private enum class WoodCutterState {
 
 class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     private lateinit var playerInterface: PlayerInterface
-    override val settings: List<InfiniteSetting<*>> = listOf(
-        InfiniteSetting.IntSetting(
-            "Range",
-            "探索範囲。x,z方向にこの範囲内のブロックを捜索する。",
-            32,
-            5,
-            64,
-        ),
-
-        InfiniteSetting.IntSetting(
-            "Height",
-            "探索範囲。y方向にこの範囲内のブロックを捜索する。",
-            5,
-            2,
-            10,
-        ),
-        InfiniteSetting.BooleanSetting(
-            "CollectItems",
-            "伐採後にドロップアイテムを回収します。",
-            true,
-        ),
-    )
+    override val settings: List<InfiniteSetting<*>> =
+        listOf(
+            InfiniteSetting.IntSetting(
+                "Range",
+                "探索範囲。x,z方向にこの範囲内のブロックを捜索する。",
+                32,
+                5,
+                64,
+            ),
+            InfiniteSetting.IntSetting(
+                "Height",
+                "探索範囲。y方向にこの範囲内のブロックを捜索する。",
+                5,
+                2,
+                10,
+            ),
+            InfiniteSetting.BooleanSetting(
+                "CollectItems",
+                "伐採後にドロップアイテムを回収します。",
+                true,
+            ),
+        )
 
     override val depends: List<Class<out ConfigurableFeature>> = listOf(AIMode::class.java)
 
@@ -92,7 +92,10 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
                     if (movePoint != null) {
                         playerInterface.addTask(
                             MoveTask(
-                                movePoint, requiredDistance = 1.0, breakableBlock = { id -> isLeave(id) })
+                                movePoint,
+                                requiredDistance = 1.0,
+                                breakableBlock = { id -> isLeave(id) },
+                            ),
                         )
                     }
                 } else {
@@ -125,11 +128,12 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
                     InfiniteClient.log("Cutting finished or tree disappeared.")
                     // ログをすべて伐採したら、次の状態へ
                     val collectItems = settings.find { it.name == "CollectItems" }?.value as? Boolean ?: false
-                    currentState = if (collectItems) {
-                        WoodCutterState.COLLECTING_ITEMS
-                    } else {
-                        WoodCutterState.SEARCHING
-                    }
+                    currentState =
+                        if (collectItems) {
+                            WoodCutterState.COLLECTING_ITEMS
+                        } else {
+                            WoodCutterState.SEARCHING
+                        }
                     return
                 }
 
@@ -253,11 +257,12 @@ class WoodCutter : ConfigurableFeature(initialEnabled = false) {
 
                         // 根元判定: 下のブロックのIDが現在のログと同じでない
                         if (blockUnderId != blockId) {
-                            val tree = Tree(
-                                rootPos = currentPos,
-                                id = blockId,
-                                client = client,
-                            )
+                            val tree =
+                                Tree(
+                                    rootPos = currentPos,
+                                    id = blockId,
+                                    client = client,
+                                )
 
                             // ログの座標を事前に取得しておく
                             // Tree の init ブロックで既に呼ばれているが、念のため
@@ -306,14 +311,15 @@ data class Tree(
             logBlocks.add(currentPos)
             countedLogs.add(currentPos)
 
-            val searchDirections = listOf(
-                currentPos.up(),
-                currentPos.down(),
-                currentPos.north(),
-                currentPos.south(),
-                currentPos.east(),
-                currentPos.west(),
-            )
+            val searchDirections =
+                listOf(
+                    currentPos.up(),
+                    currentPos.down(),
+                    currentPos.north(),
+                    currentPos.south(),
+                    currentPos.east(),
+                    currentPos.west(),
+                )
 
             for (neighborPos in searchDirections) {
                 if (!countedLogs.contains(neighborPos)) {
@@ -332,7 +338,6 @@ data class Tree(
     init {
         calculateLogBlocks()
     }
-
 
     override fun toString(): String = "$id Tree at (${rootPos.x}, ${rootPos.y}, ${rootPos.z}) with $logCount logs"
 }
