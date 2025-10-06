@@ -14,6 +14,6 @@ val automatic =
         feature(
             "WoodCutter",
             WoodCutter(),
-            "自動で木を集めます。"
-        )
+            "自動で木を集めます。",
+        ),
     )

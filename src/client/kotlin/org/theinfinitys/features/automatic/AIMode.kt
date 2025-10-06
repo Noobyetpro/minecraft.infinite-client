@@ -9,12 +9,11 @@ import org.theinfinitys.settings.InfiniteSetting
  * クライアントプレイヤーのAI制御を管理するフィーチャー。
  */
 class AIMode : ConfigurableFeature(initialEnabled = false) {
+    // WoodCutterがこのAIを利用することを示唆
     private val aiFeatureClasses: List<Class<out ConfigurableFeature>> = listOf(WoodCutter::class.java)
 
-    // ダメージ検知用の変数
     private var lastKnownHealth: Float = -1.0f
 
-    // --- 設定 ---
     override val settings: List<InfiniteSetting<*>> =
         listOf(
             InfiniteSetting.BooleanSetting(
@@ -26,7 +25,7 @@ class AIMode : ConfigurableFeature(initialEnabled = false) {
             InfiniteSetting.BooleanSetting(
                 "CancelOnDamaged",
                 "プレイヤーがダメージを受けた際にAIを強制中断します。",
-                false,
+                true, // デフォルトをtrueに設定してテストしやすく
             ),
         )
 
@@ -35,13 +34,30 @@ class AIMode : ConfigurableFeature(initialEnabled = false) {
     }
 
     override fun disabled() {
-        lastKnownHealth = -1.0f // 無効化時にリセット
+        lastKnownHealth = -1.0f
     }
 
     override fun tick() {
+        // AIを利用するフィーチャーがない場合、AIModeを無効化
         if (!aiFeatureClasses.any { aiFeature -> InfiniteClient.isFeatureEnabled(aiFeature) }) {
             disable()
             return
+        }
+
+        // ダメージ検知ロジック
+        val player = MinecraftClient.getInstance().player
+        val cancelOnDamaged = settings.find { it.name == "CancelOnDamaged" }?.value as? Boolean ?: false
+
+        if (player != null && cancelOnDamaged) {
+            val currentHealth = player.health
+
+            // プレイヤーがダメージを受けたか（Healthが減ったか）を検知
+            if (lastKnownHealth > 0.0f && currentHealth < lastKnownHealth) {
+                InfiniteClient.log("Player damaged! Cancelling AI operation.")
+                disable() // AIMode全体を無効化
+                return
+            }
+            lastKnownHealth = currentHealth
         }
     }
 }
