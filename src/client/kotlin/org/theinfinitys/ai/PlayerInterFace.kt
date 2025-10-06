@@ -3,8 +3,7 @@ package org.theinfinitys.ai
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.math.Vec3d
 import org.theinfinitys.ai.task.MoveTask
-import java.util.ArrayDeque
-import java.util.Queue
+import java.util.ArrayDeque // ArrayDequeを使用
 
 /**
  * PlayerAIからの指示を受け取り、タスクの追加と、tickイベントによる操作を実行する
@@ -14,17 +13,33 @@ import java.util.Queue
 class PlayerInterface(private val client: MinecraftClient) {
 
     // プレイヤーの操作ロジックをカプセル化
-    private val controller: PlayerController = PlayerController(client)
+    fun hasActiveTasks(): Boolean {
+        return tasks.isNotEmpty()
+    }
 
-    // 実行待ちのタスクを保持するキュー
-    private val tasks: Queue<Task> = ArrayDeque()
+    private val controller: PlayerController = PlayerController(client)
+    var lastTaskResult: TaskTickResult? = null
+
+    // 実行待ちのタスクを保持するキュー。ArrayDequeはQueueインターフェースを実装しているため問題ありません。
+    // ArrayDequeに変更
+    private val tasks: ArrayDeque<Task> = ArrayDeque()
 
     /**
-     * キューに新しいタスクを追加します。
+     * キューの**末尾**に新しいタスクを追加します。（通常実行）
      * @param task 追加するタスク
      */
     fun addTask(task: Task) {
-        tasks.offer(task)
+        tasks.offer(task) // 末尾に追加
+    }
+
+    /**
+     * 現在のタスクを中断し、新しいタスクを**キューの先頭**に追加して直ちに実行させます。（割り込み）
+     *
+     * 割り込みタスクが完了すると、キューの次にある（中断された）タスクが再開されます。
+     * @param task 割り込みタスク
+     */
+    fun interruptTask(task: Task) {
+        tasks.addFirst(task) // 先頭に追加
     }
 
     /**
@@ -44,16 +59,28 @@ class PlayerInterface(private val client: MinecraftClient) {
 
         if (currentTask != null) {
             // 現在のタスクを1ティック実行
-            val isFinished = currentTask.onTick(controller)
+            val taskTickResult = currentTask.onTick(controller)
+            lastTaskResult = taskTickResult
+            when (taskTickResult) {
+                is TaskTickResult.Progress -> {}
+                is TaskTickResult.Success, is TaskTickResult.Failure -> {
+                    // 完了または失敗したタスクはキューから削除
+                    tasks.poll()
+                    controller.stopMovementControl()
+                }
 
-            if (isFinished) {
-                // タスクが完了したらキューから削除
-                tasks.poll()
-                // 次のタスク実行前に、現在の操作を完全に停止してクリーンアップ
-                controller.stopMovementControl()
+                is TaskTickResult.Interrupt -> {
+                    // 1. 現在のタスクをキューに残したまま、操作を停止
+                    controller.stopMovementControl()
+
+                    // 2. 割り込みとして渡された新しいタスクをキューの先頭に追加 (Interrupt処理)
+                    tasks.addFirst(taskTickResult.interruptTask)
+
+                    // NOTE: 現在のタスク（currentTask）はキューに残ります。
+                    // 次のティックでは、割り込みタスクが実行されます。
+                }
             }
         } else {
-            // タスクがない場合、プレイヤーの操作を停止
             controller.stopMovementControl()
         }
     }

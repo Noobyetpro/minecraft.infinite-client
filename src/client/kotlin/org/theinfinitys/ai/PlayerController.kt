@@ -12,7 +12,7 @@ import kotlin.math.atan2
  * プレイヤーエンティティを操作するコントローラークラス。
  * 実際の操作ロジックは全てここに集約されます。
  */
-class PlayerController(private val client: MinecraftClient) {
+class PlayerController(val client: MinecraftClient) {
     private val player: ClientPlayerEntity = client.player!!
 
     fun getPlayer(): ClientPlayerEntity = player
