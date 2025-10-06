@@ -9,7 +9,7 @@ import org.theinfinitys.settings.InfiniteSetting
  * クライアントプレイヤーのAI制御を管理するフィーチャー。
  */
 class AIMode : ConfigurableFeature(initialEnabled = false) {
-    private val aiFeatureClasses: List<Class<out ConfigurableFeature>> = listOf()
+    private val aiFeatureClasses: List<Class<out ConfigurableFeature>> = listOf(WoodCutter::class.java)
 
     // ダメージ検知用の変数
     private var lastKnownHealth: Float = -1.0f
