@@ -24,6 +24,7 @@ private enum class WoodCutterState {
 
 class WoodCutter : ConfigurableFeature(initialEnabled = false) {
     private lateinit var playerInterface: PlayerInterface
+    override val available: Boolean = false
     override val settings: List<InfiniteSetting<*>> =
         listOf(
             InfiniteSetting.IntSetting(

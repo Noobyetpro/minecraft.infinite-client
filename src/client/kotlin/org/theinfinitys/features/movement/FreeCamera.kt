@@ -15,6 +15,7 @@ import org.theinfinitys.settings.InfiniteSetting
 class FreeCamera : ConfigurableFeature(initialEnabled = false) {
 
     private val mc: MinecraftClient = MinecraftClient.getInstance()
+    override val available: Boolean = false
 
     // カメラの現在の座標と視点を保持する変数
     private var cameraPosition: Vec3d? = null
