@@ -5,6 +5,7 @@ import org.theinfinitys.features.movement.AutoMine
 import org.theinfinitys.features.movement.AutoWalk
 import org.theinfinitys.features.movement.FastBreak
 import org.theinfinitys.features.movement.FeatherWalk
+import org.theinfinitys.features.movement.FreeCamera
 import org.theinfinitys.features.movement.Freeze
 import org.theinfinitys.features.movement.SafeWalk
 import org.theinfinitys.features.movement.SuperSprint
@@ -52,4 +53,5 @@ val movement =
             WaterHover(),
             "水中で勝手に沈まないようにします。",
         ),
+        feature("FreeCamera", FreeCamera(), "いつでもスペクテイターモードに慣れます。")
     )
