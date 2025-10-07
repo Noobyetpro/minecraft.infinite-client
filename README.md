@@ -2,7 +2,7 @@
 
 ![Infinite Client Icon](src/main/resources/assets/infinite/icon.svg)
 
-**Infinite Client** is a simple Minecraft hack client designed for ease of use and a clean interface.
+**Infinite Client** is a simple Minecraft utility client built for anarchy servers designed for ease of use and a clean interface. 
 
 ##  Features
 
